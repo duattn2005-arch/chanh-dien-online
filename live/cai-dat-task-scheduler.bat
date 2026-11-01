@@ -20,3 +20,4 @@ if %errorLevel% == 0 (
     echo [LỖI] Không thể tạo tác vụ trong Task Scheduler.
 )
 timeout /t 5
+

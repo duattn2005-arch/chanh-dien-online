@@ -30,3 +30,4 @@ $res = Invoke-Expression $SchCmd
 Write-Host "   -> Kết quả: $res"
 
 Write-Host "`nĐã hoàn thành cấu hình tự khởi động Windows vĩnh viễn!"
+

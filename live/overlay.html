@@ -23,39 +23,39 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:var(-
 #tags-layer{position:absolute;inset:0;pointer-events:none;z-index:2;overflow:visible}
 #bubbles-layer{position:absolute;inset:0;pointer-events:none;z-index:4;overflow:visible}
 .name-tag{
-  position:absolute;left:0;top:0;display:inline-flex;align-items:center;gap:10px;
-  padding:6px 16px 6px 8px;border-radius:999px;
-  background:linear-gradient(180deg,rgba(36,16,7,.96),rgba(18,8,3,.96));
-  border:2px solid rgba(226,176,79,.75);
-  box-shadow:0 4px 14px rgba(0,0,0,.75),0 0 1px rgba(0,0,0,.9);
+  position:absolute;left:0;top:0;display:inline-flex;align-items:center;gap:6px;
+  padding:3px 10px 3px 5px;border-radius:999px;
+  background:linear-gradient(180deg,rgba(32,14,6,.96),rgba(16,7,3,.96));
+  border:1.5px solid rgba(226,176,79,.75);
+  box-shadow:0 3px 10px rgba(0,0,0,.7);
   white-space:nowrap;transform-origin:center center;will-change:transform;pointer-events:none;
 }
 .name-tag.gold{
-  background:linear-gradient(180deg,rgba(88,36,12,.97),rgba(44,16,5,.97));
-  border:2.5px solid #e2b04f;
-  box-shadow:0 4px 18px rgba(226,176,79,.4),0 2px 6px rgba(0,0,0,.85);
+  background:linear-gradient(180deg,rgba(78,32,10,.97),rgba(38,14,4,.97));
+  border:2px solid #e2b04f;
+  box-shadow:0 3px 14px rgba(226,176,79,.35);
 }
 .tag-av{
-  width:30px;height:30px;border-radius:50%;border:1.5px solid rgba(255,217,138,.85);
+  width:18px;height:18px;border-radius:50%;border:1px solid rgba(255,217,138,.85);
   object-fit:cover;flex-shrink:0;display:block;background:rgba(226,176,79,.25);
 }
 .tag-name{
-  font-family:var(--body);font-weight:600;font-size:24px;line-height:1.15;color:#fff8e8;
-  letter-spacing:.01em;text-shadow:0 1px 3px rgba(0,0,0,.95);max-width:220px;
+  font-family:var(--body);font-weight:600;font-size:16px;line-height:1.15;color:#fff8e8;
+  letter-spacing:.01em;text-shadow:0 1px 2px rgba(0,0,0,.95);max-width:160px;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
 .name-tag.gold .tag-name{
-  color:#ffd98a;font-weight:700;text-shadow:0 1px 4px rgba(0,0,0,.95),0 0 12px rgba(255,217,138,.4);
+  color:#ffd98a;font-weight:700;
 }
 .speech-bubble{
-  position:absolute;left:0;top:0;padding:10px 20px;border-radius:20px;
-  background:rgba(255,248,236,.97);box-shadow:0 6px 22px rgba(0,0,0,.6),0 1px 2px rgba(0,0,0,.8);
-  color:#351506;font-family:var(--body);font-weight:600;font-size:24px;line-height:1.3;
-  max-width:340px;word-break:break-word;will-change:transform;pointer-events:none;transform-origin:center bottom;
+  position:absolute;left:0;top:0;padding:6px 14px;border-radius:14px;
+  background:rgba(255,248,236,.96);box-shadow:0 4px 16px rgba(0,0,0,.6);
+  color:#351506;font-family:var(--body);font-weight:600;font-size:18px;line-height:1.25;
+  max-width:220px;word-break:break-word;will-change:transform;pointer-events:none;transform-origin:center bottom;
 }
 .speech-bubble::after{
-  content:"";position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);
-  border-width:10px 9px 0;border-style:solid;border-color:rgba(255,248,236,.97) transparent;
+  content:"";position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);
+  border-width:7px 6px 0;border-style:solid;border-color:rgba(255,248,236,.96) transparent;
 }
 /* title plaque */
 #plaque{left:90px;right:90px;top:70px;height:150px;border:3px solid var(--gold);border-radius:28px;
@@ -105,7 +105,7 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:var(-
 #conn{position:absolute;z-index:4;right:16px;bottom:12px;font-size:20px;color:var(--muted);opacity:.6}
 
 /* YouTube music player card */
-#yt-card{left:24px;top:836px;width:290px;box-sizing:border-box;padding:12px;background:var(--panel);border:2px solid var(--line);border-radius:20px;z-index:4;box-shadow:0 8px 30px rgba(0,0,0,.6)}
+#yt-card{position:fixed;left:-9999px;top:-9999px;width:200px;height:200px;opacity:0.01;pointer-events:none;z-index:-999;overflow:hidden}
 .yt-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .yt-title{font-family:var(--display);font-size:20px;font-weight:700;color:var(--gold2);letter-spacing:.05em}
 .yt-badge{font-size:14px;padding:3px 8px;border-radius:10px;background:rgba(70,211,107,.25);color:#46d36b;font-weight:600;font-family:var(--body)}
@@ -185,36 +185,71 @@ const hasAnim = k => ANIM[k] && A['anim_'+k]?.naturalWidth > 0;
 const avatars = new Map();
 function avatar(url){ if(!url) return null; let im=avatars.get(url); if(!im){ im=new Image(); im.referrerPolicy='no-referrer'; im.src=url; avatars.set(url,im); } return im.naturalWidth?im:null; }
 
-/* ======================= seats ======================= */
-// Floor trapezoid in the painting: back row just below the altar, front row near the bottom.
-const FLOOR = { yTop: 1325, yBot: 1845, halfTop: 290, halfBot: 430 };
-const GRID = { 24:[6,4], 36:[6,6], 64:[8,8], 100:[10,10] };
+/* ======================= seats: 2 Cột Thẳng Đứng 2 Bên ======================= */
+const FLOOR_LEFT_X = 230;
+const FLOOR_RIGHT_X = 850;
+const FLOOR_Y_TOP = 1330;
+const FLOOR_Y_BOT = 1845;
+const FLOOR = { yTop: FLOOR_Y_TOP, yBot: FLOOR_Y_BOT };
+const MAX_VISIBLE_PER_COL = 12; // 24 người hiển thị đồng thời
 let cap = 24, seats = [];
-function layout(c){
-  cap = c; const [cols, rows] = GRID[c] || GRID[24]; seats = [];
-  for (let r=0;r<rows;r++){
-    const t = rows===1 ? .5 : r/(rows-1);                     // 0 = back row
-    const y = FLOOR.yTop + (FLOOR.yBot-FLOOR.yTop)*t;
-    const half = FLOOR.halfTop + (FLOOR.halfBot-FLOOR.halfTop)*t;
-    const scale = (.32 + .28*t) * (6/cols) ** .75;
-    const aisle = .26;                                        // a real aisle: room for the line in the middle and a walkway on each side of it
-    const gap = 2*half*(1-aisle)/(cols-1) * .96;              // room for one name tag: the real distance between neighbours, after the aisle takes its share
-    for (let k=0;k<cols;k++){
-      let u = (k-(cols-1)/2)/((cols-1)/2); u = Math.sign(u)*(aisle + (1-aisle)*Math.abs(u));   // open a centre aisle
-      seats.push({ x: 540 + u*half, y, scale, r, k, rows, gap });
-    }
-  }
-  // people spread evenly over the whole floor, whatever their number: each new seat goes where the hall is still empty
-  seats=seats.map((s,i)=>[s,(i*.61803)%1]).sort((a,b)=>a[1]-b[1]).map(e=>e[0]);
-  reseat();
-}
 const visitors = new Map();  // id -> visitor
 let order = [];               // ids in seating order
 let tagLayoutDirty = true;
+let pageOffset = 0;
+
+// Tự động cuộn/phân trang mượt nếu quá đông người
+setInterval(() => {
+  if (order.length > MAX_VISIBLE_PER_COL * 2) {
+    pageOffset = (pageOffset + 2) % order.length;
+    reseat();
+  }
+}, 16000);
+
 function reseat(){
   order = order.filter(id => visitors.has(id));
-  order.forEach((id,i) => { const v = visitors.get(id), s = seats[i]; if (!v || !s) return; v.seat = s; if (v.state==='sit') { v.tx = s.x; v.ty = s.y; } });
+  const total = order.length;
+  if (total === 0) return;
+
+  const maxVis = MAX_VISIBLE_PER_COL * 2;
+  const activeIds = total <= maxVis 
+    ? order 
+    : Array.from({length: maxVis}, (_, i) => order[(pageOffset + i) % total]);
+
+  const leftIds = activeIds.filter((_, idx) => idx % 2 === 0);
+  const rightIds = activeIds.filter((_, idx) => idx % 2 === 1);
+
+  const nL = leftIds.length;
+  const nR = rightIds.length;
+
+  leftIds.forEach((id, i) => {
+    const v = visitors.get(id);
+    if (!v) return;
+    const t = nL <= 1 ? 0.5 : i / (nL - 1);
+    const y = FLOOR_Y_TOP + (FLOOR_Y_BOT - FLOOR_Y_TOP) * t;
+    const scale = 0.38 + 0.08 * t;
+    v.seat = { x: FLOOR_LEFT_X, y, scale, side: 'left', r: i, rows: nL };
+    v.flip = false; // Bên trái quay mặt vào giữa (hướng phải)
+    if (v.state === 'sit') { v.tx = FLOOR_LEFT_X; v.ty = y; }
+  });
+
+  rightIds.forEach((id, i) => {
+    const v = visitors.get(id);
+    if (!v) return;
+    const t = nR <= 1 ? 0.5 : i / (nR - 1);
+    const y = FLOOR_Y_TOP + (FLOOR_Y_BOT - FLOOR_Y_TOP) * t;
+    const scale = 0.38 + 0.08 * t;
+    v.seat = { x: FLOOR_RIGHT_X, y, scale, side: 'right', r: i, rows: nR };
+    v.flip = true; // Bên phải quay mặt vào giữa (hướng trái)
+    if (v.state === 'sit') { v.tx = FLOOR_RIGHT_X; v.ty = y; }
+  });
+
   tagLayoutDirty = true;
+}
+
+function layout(c){
+  cap = c || 24;
+  reseat();
 }
 document.getElementById('count').textContent = '0/24';
 
@@ -260,7 +295,7 @@ function showChant(text){ document.getElementById('chantText').textContent=text;
 /* ======================= YouTube Music Player ======================= */
 const YT_VIDEO_ID = 'YX1brbZAH_8';
 let ytPlayer = null, ytReady = false;
-let ytUserVol = parseInt(localStorage.getItem('cd_yt_vol') || '60', 10);
+let ytUserVol = 60; localStorage.setItem('cd_yt_vol', '60');
 let ytWantedPlay = localStorage.getItem('cd_yt_play') !== '0';
 let ytDucked = false;
 
@@ -855,13 +890,13 @@ function bubble(text,x,y,s){
 }
 const SEAT_TAG_SCALE=.27;      // seated names stay small all the way down the hall, or the front rows run into each other
 // Comments wait their turn so a burst stays readable: every one is shown, only a little later, and faster when many are waiting.
-const chatQueue=[], MAX_BUBBLES=4; let bubblesShown=0;
+const chatQueue=[], MAX_BUBBLES=2; let bubblesShown=0;
 function showComments(now){
   let active=0; for (const v of visitors.values()) if (v.bubble && now<v.bubble.until) active++;
   for (let i=0;i<chatQueue.length && active<MAX_BUBBLES;){ const c=chatQueue[i], v=visitors.get(c.id);
     if (!v){ chatQueue.splice(i,1); continue; }
     if (v.bubble && now<v.bubble.until){ i++; continue; }
-    v.bubble={text:c.text, until:now+(chatQueue.length>10?2200:4500)}; v.spokeUntil=now+20000; active++; bubblesShown++; chatQueue.splice(i,1); }
+    v.bubble={text:c.text, until:now+4000}; v.spokeUntil=now+20000; active++; bubblesShown++; chatQueue.splice(i,1); }
 }
 let last=performance.now();
 function frame(now){
@@ -899,12 +934,12 @@ function frame(now){
     const s=v.seat?.scale||.4;
     if (v.rite) stepRite(v,dt,now);
     else if (v.state==='sitting'){ v.sitT+=dt; v.frame=4+Math.min(3,Math.floor(v.sitT/.22)); if (v.sitT>.9){ v.state='sit'; v.frame=7; } }
-    else if (v.seat){ v.x+=(v.seat.x-v.x)*Math.min(1,dt*3); v.y+=(v.seat.y-v.y)*Math.min(1,dt*3); }      // glide when the grid grows
+    else if (v.seat){ v.x+=(v.seat.x-v.x)*Math.min(1,dt*3); v.y+=(v.seat.y-v.y)*Math.min(1,dt*3); if (v.state==='sit') v.flip = (v.seat.side === 'right'); }      // glide when the grid grows
     v.fade=Math.min(1,v.fade+dt*2); v.glow=Math.max(0,v.glow-dt*.45); v.bow=Math.max(0,v.bow-dt*.7);
     const r=v.rite, body=r?(RITE_BODY[v.skin]||v.skin):v.skin, anim=hasAnim(body), down=r && ['bow'].includes(r.phase);
     const inLine=r?.phase==='wait';
     if (r) r.ws+=((r.back?s:inLine?QUEUE_SCALE:(r.phase==='raise'||r.phase==='place'||(r.phase==='go'&&r.path.length===1))?ALTAR_SCALE:LANE_SCALE)-r.ws)*Math.min(1,dt*2.5);
-    const ws = r ? r.ws : v.state==='walk' ? (.26+.26*Math.max(0,Math.min(1,(v.y-FLOOR.yTop)/(FLOOR.yBot-FLOOR.yTop)))) * ((6/((GRID[cap]||GRID[24])[0]))**.7) : s;
+    const ws = r ? r.ws : v.state==='walk' ? (.26+.22*Math.max(0,Math.min(1,(v.y-FLOOR_Y_TOP)/(FLOOR_Y_BOT-FLOOR_Y_TOP)))) : s;
     if (v.glow>0 || v.skin==='master'){
       ctx.save(); ctx.globalCompositeOperation='lighter'; ctx.globalAlpha=Math.max(v.glow*.75, v.skin==='master'?.35+.1*Math.sin(t*1.6):0);
       const g=ctx.createRadialGradient(v.x,v.y-110*ws,8,v.x,v.y-110*ws,200*ws); g.addColorStop(0,'rgba(255,205,120,.95)'); g.addColorStop(1,'rgba(255,160,60,0)'); ctx.fillStyle=g; ctx.fillRect(v.x-230*ws,v.y-340*ws,460*ws,400*ws); ctx.restore();
@@ -958,21 +993,22 @@ function frame(now){
     else if (cap<64 || v.coins>0 || now<(v.spokeUntil||0)){
       activeTagIds.add(v.id);
       const isGold = v.coins>=99 || v.skin==='master';
-      const rowT = v.seat ? (v.seat.r / (v.seat.rows > 1 ? v.seat.rows - 1 : 1)) : 0.5;
-      const fs = Math.round(18 + 5 * rowT);
-      const maxW = Math.round(120 + 50 * rowT);
-      const tagH = Math.round(32 + 8 * rowT);
-      const avSize = Math.round(20 + 8 * rowT);
-      const staggerDiff = tagH + 8;
-      const stagger = v.seat ? ((v.seat.k % 2 === 0 ? -1 : 1) * Math.round(staggerDiff / 2)) : 0;
-      const approxW = Math.min(maxW + 40, v.name.length * fs * 0.6 + avSize + 24);
-      seatTags.push({ id:v.id, name:v.name, x:v.x, y:ty + stagger, baseX:v.x, baseY:ty + stagger, isGold, av:v.avatar, fs, maxW, avSize, w:approxW, h:tagH });
+      const fs = 16;
+      const maxW = 160;
+      const tagH = 26;
+      const avSize = 18;
+      const isLeft = v.seat?.side === 'left' || v.x < 540;
+      const tagX = isLeft ? v.x - 12 : v.x + 12;
+      const tagY = ty - 4;
+      seatTags.push({ id:v.id, name:v.name, x:tagX, y:tagY, baseX:tagX, baseY:tagY, isGold, av:v.avatar, fs, maxW, avSize, w:150, h:tagH });
     }
     if (v.bubble && now<v.bubble.until){
       if (!onTheMove){
         activeBubbleIds.add(v.id);
-        const bY = ty - 42;
-        updateBubble(v.id, v.bubble.text, v.x, bY, true);
+        const isLeft = v.seat?.side === 'left' || v.x < 540;
+        const bX = isLeft ? v.x + 85 : v.x - 85;
+        const bY = ty - 38;
+        updateBubble(v.id, v.bubble.text, bX, bY, true);
       }
     } else {
       v.bubble=null;
