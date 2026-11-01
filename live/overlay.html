@@ -105,8 +105,6 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:var(-
 #gift .who{font-family:var(--display);font-weight:700;font-size:44px;line-height:1.2;color:var(--gold2)}
 #gift .what{font-size:29px;margin-top:2px}
 #gift .pray{font-family:var(--display);font-style:italic;font-size:27px;color:var(--fg);margin-top:4px;opacity:.95}
-/* enable sound (needed once: browsers block autoplay) */
-#unmute{position:absolute;z-index:9;left:50%;top:1540px;transform:translateX(-50%);font:600 36px var(--body);padding:22px 44px;border-radius:24px;border:3px solid var(--gold2);background:var(--red);color:#fff4dc;cursor:pointer}
 #conn{position:absolute;z-index:4;right:16px;bottom:12px;font-size:20px;color:var(--muted);opacity:.6}
 
 /* YouTube music player card */
@@ -165,7 +163,6 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:var(-
       </div>
     </div>
   </div>
-  <button id="unmute">🔔 Bấm để bật âm thanh</button>
   <div id="conn">đang kết nối…</div>
 </div></div>
 
@@ -447,7 +444,6 @@ if (valTextYt) valTextYt.textContent = ytUserVol + '%';
 
 let AC=null, master=null, musicGain=null, sfx=null, settings={ music:true, mo:true, moBpm:52 };
 const TRACKS=['/assets/music/music1.mp3','/assets/music/music2.mp3']; let trackIdx=Math.floor(Math.random()*TRACKS.length), musicEl=null;
-document.getElementById('unmute').onclick = e => { e.currentTarget.remove(); startAudio(); ytUnmuteAndPlay(); };
 function startAudio(){
   AC = new (window.AudioContext||window.webkitAudioContext)();
   master = AC.createGain(); master.gain.value=.9; master.connect(AC.destination);
@@ -1067,12 +1063,9 @@ function tick(now){
 }
 onFit=applyScale; applyScale();
 layout(24); requestAnimationFrame(tick);
-// ?auto is for a page nobody can click, such as a Link source in LIVE Studio or mo-overlay.bat: no button on screen, and sound starts as soon as the browser allows it
-if (new URLSearchParams(location.search).has('auto')){
-  document.getElementById('unmute').remove();
-  const probe=new (window.AudioContext||window.webkitAudioContext)();
-  const tryStart=setInterval(()=>{ probe.resume(); if (probe.state==='running'){ clearInterval(tryStart); probe.close(); startAudio(); ytUnmuteAndPlay(); } },1000);
-}
+// no button on the live screen: sound starts as soon as the browser allows it; if autoplay is blocked, one click or key press in the overlay window allows it
+const probe=new (window.AudioContext||window.webkitAudioContext)();
+const tryStart=setInterval(()=>{ probe.resume(); if (probe.state==='running'){ clearInterval(tryStart); probe.close(); startAudio(); ytUnmuteAndPlay(); } },1000);
 </script>
 </body>
 </html>
