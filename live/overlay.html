@@ -23,40 +23,45 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:var(-
 #tags-layer{position:absolute;inset:0;pointer-events:none;z-index:2;overflow:visible}
 #bubbles-layer{position:absolute;inset:0;pointer-events:none;z-index:4;overflow:visible}
 .name-tag{
-  position:absolute;left:0;top:0;display:inline-flex;align-items:center;gap:6px;
-  padding:3px 10px 3px 5px;border-radius:999px;
-  background:linear-gradient(180deg,rgba(32,14,6,.96),rgba(16,7,3,.96));
-  border:1.5px solid rgba(226,176,79,.75);
-  box-shadow:0 3px 10px rgba(0,0,0,.7);
-  white-space:nowrap;transform-origin:center center;will-change:transform;pointer-events:none;
+  position:absolute;left:0;top:0;display:inline-flex;align-items:center;gap:4px;
+  padding:2px 8px;border-radius:12px;
+  background:linear-gradient(180deg,rgba(26,10,4,.96),rgba(12,4,2,.96));
+  border:1.2px solid rgba(226,176,79,.85);
+  box-shadow:0 3px 10px rgba(0,0,0,.85);
+  white-space:nowrap;transform:translate(-50%,-50%);will-change:transform;pointer-events:none;
+}
+.name-tag::before{
+  content:"❁";font-size:12px;color:var(--gold2);margin-right:2px;
 }
 .name-tag.gold{
   background:linear-gradient(180deg,rgba(78,32,10,.97),rgba(38,14,4,.97));
-  border:2px solid #e2b04f;
-  box-shadow:0 3px 14px rgba(226,176,79,.35);
+  border:1.5px solid #e2b04f;
+  box-shadow:0 3px 12px rgba(226,176,79,.35);
 }
-.tag-av{
-  width:18px;height:18px;border-radius:50%;border:1px solid rgba(255,217,138,.85);
-  object-fit:cover;flex-shrink:0;display:block;background:rgba(226,176,79,.25);
-}
+.tag-av{display:none}
 .tag-name{
-  font-family:var(--body);font-weight:600;font-size:16px;line-height:1.15;color:#fff8e8;
-  letter-spacing:.01em;text-shadow:0 1px 2px rgba(0,0,0,.95);max-width:160px;
+  font-family:var(--body);font-weight:600;font-size:13px;line-height:1.2;color:#fff4dc;
+  letter-spacing:.02em;text-shadow:0 1px 2px #000;max-width:110px;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
-.name-tag.gold .tag-name{
-  color:#ffd98a;font-weight:700;
+.name-tag.gold .tag-name{color:#ffd98a;font-weight:700}
+
+/* Dedicated clean comment banner in center aisle */
+#comment-banner{
+  position:absolute;left:50%;top:1130px;transform:translateX(-50%) scale(.95);
+  z-index:7;padding:8px 24px;border-radius:22px;
+  background:linear-gradient(180deg,rgba(40,16,6,.96),rgba(20,8,3,.96));
+  border:2px solid var(--gold);box-shadow:0 8px 30px rgba(0,0,0,.9),0 0 15px rgba(226,176,79,.3);
+  display:flex;align-items:center;gap:10px;max-width:560px;
+  opacity:0;pointer-events:none;transition:opacity .35s,transform .35s cubic-bezier(.2,1.3,.4,1);
 }
-.speech-bubble{
-  position:absolute;left:0;top:0;padding:6px 14px;border-radius:14px;
-  background:rgba(255,248,236,.96);box-shadow:0 4px 16px rgba(0,0,0,.6);
-  color:#351506;font-family:var(--body);font-weight:600;font-size:18px;line-height:1.25;
-  max-width:220px;word-break:break-word;will-change:transform;pointer-events:none;transform-origin:center bottom;
+#comment-banner.show{
+  opacity:1;transform:translateX(-50%) scale(1);
 }
-.speech-bubble::after{
-  content:"";position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);
-  border-width:7px 6px 0;border-style:solid;border-color:rgba(255,248,236,.96) transparent;
-}
+.cb-icon{font-size:22px}
+.cb-name{font-family:var(--body);font-weight:700;font-size:22px;color:var(--gold2);white-space:nowrap}
+.cb-colon{color:var(--gold);font-weight:700}
+.cb-text{font-family:var(--body);font-weight:500;font-size:22px;color:#fff8ea;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* title plaque */
 #plaque{left:90px;right:90px;top:70px;height:150px;border:3px solid var(--gold);border-radius:28px;
   background:linear-gradient(180deg,rgba(70,26,10,.92),rgba(30,12,6,.92));box-shadow:0 0 0 6px rgba(0,0,0,.35),0 0 50px rgba(226,176,79,.25) inset;
@@ -141,6 +146,7 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:var(-
   </div>
   <div id="merit" class="card ui"><h3>✦ Công Đức ✦</h3><ol id="meritList"><li class="empty">Chưa có</li></ol></div>
   <div id="chant" class="ui"><h4>✦ TỤNG KINH ĐỊNH KỲ ✦</h4><p id="chantText"></p></div>
+  <div id="comment-banner" class="ui"><span class="cb-icon">💬</span><span id="cb-name" class="cb-name"></span><span class="cb-colon">:</span><span id="cb-text" class="cb-text"></span></div>
   <div id="gift" class="ui"><div class="who" id="giftWho"></div><div class="what" id="giftWhat"></div><div class="pray" id="giftPray"></div></div>
   <div id="yt-card" class="card ui">
     <div class="yt-header">
@@ -185,75 +191,89 @@ const hasAnim = k => ANIM[k] && A['anim_'+k]?.naturalWidth > 0;
 const avatars = new Map();
 function avatar(url){ if(!url) return null; let im=avatars.get(url); if(!im){ im=new Image(); im.referrerPolicy='no-referrer'; im.src=url; avatars.set(url,im); } return im.naturalWidth?im:null; }
 
-/* ======================= seats: 2 Cột Thẳng Đứng 2 Bên ======================= */
-const FLOOR_LEFT_X = 230;
-const FLOOR_RIGHT_X = 850;
-const FLOOR_Y_TOP = 1330;
+/* ======================= seats: Chia Đều Hai Bên Chánh Điện ======================= */
+const FLOOR_Y_TOP = 1320;
 const FLOOR_Y_BOT = 1845;
 const FLOOR = { yTop: FLOOR_Y_TOP, yBot: FLOOR_Y_BOT };
-const MAX_VISIBLE_PER_COL = 12; // 24 người hiển thị đồng thời
-let cap = 24, seats = [];
+let cap = 60, seats = [];
 const visitors = new Map();  // id -> visitor
 let order = [];               // ids in seating order
 let tagLayoutDirty = true;
-let pageOffset = 0;
-
-// Tự động cuộn/phân trang mượt nếu quá đông người
-setInterval(() => {
-  if (order.length > MAX_VISIBLE_PER_COL * 2) {
-    pageOffset = (pageOffset + 2) % order.length;
-    reseat();
-  }
-}, 16000);
 
 function reseat(){
   order = order.filter(id => visitors.has(id));
   const total = order.length;
   if (total === 0) return;
 
-  const maxVis = MAX_VISIBLE_PER_COL * 2;
-  const activeIds = total <= maxVis 
-    ? order 
-    : Array.from({length: maxVis}, (_, i) => order[(pageOffset + i) % total]);
+  const nL = Math.ceil(total / 2);
+  const nR = Math.floor(total / 2);
 
-  const leftIds = activeIds.filter((_, idx) => idx % 2 === 0);
-  const rightIds = activeIds.filter((_, idx) => idx % 2 === 1);
+  // Dynamic columns per side:
+  // <= 6 -> 1 col, <= 15 -> 2 cols, <= 36 -> 3 cols (e.g. 60 people = 30 per side = 3 cols x 10 rows), <= 55 -> 4 cols, > 55 -> 5 cols
+  const colsPerSide = nL <= 6 ? 1 : nL <= 15 ? 2 : nL <= 36 ? 3 : nL <= 55 ? 4 : 5;
+  const rowsL = Math.max(1, Math.ceil(nL / colsPerSide));
+  const rowsR = Math.max(1, Math.ceil(nR / colsPerSide));
 
-  const nL = leftIds.length;
-  const nR = rightIds.length;
+  const leftIds = order.filter((_, idx) => idx % 2 === 0);
+  const rightIds = order.filter((_, idx) => idx % 2 === 1);
 
+  // Left block
   leftIds.forEach((id, i) => {
     const v = visitors.get(id);
     if (!v) return;
-    const t = nL <= 1 ? 0.5 : i / (nL - 1);
+    const r = Math.floor(i / colsPerSide);
+    const c = i % colsPerSide;
+    const t = rowsL <= 1 ? 0.5 : r / (rowsL - 1);
     const y = FLOOR_Y_TOP + (FLOOR_Y_BOT - FLOOR_Y_TOP) * t;
-    const scale = 0.38 + 0.08 * t;
-    v.seat = { x: FLOOR_LEFT_X, y, scale, side: 'left', r: i, rows: nL };
-    v.flip = false; // Bên trái quay mặt vào giữa (hướng phải)
-    if (v.state === 'sit') { v.tx = FLOOR_LEFT_X; v.ty = y; }
+
+    // Perspective aisle: 170px wide at top, 270px wide at bottom
+    const aisleHalf = 85 + 50 * t;
+    const innerX = 540 - aisleHalf;
+    const outerX = 110 - 45 * t;
+    const u = colsPerSide <= 1 ? 0.5 : c / (colsPerSide - 1);
+    const x = outerX + (innerX - outerX) * u;
+
+    const baseScale = colsPerSide >= 4 ? 0.27 : colsPerSide === 3 ? 0.31 : 0.38;
+    const scale = (baseScale + 0.10 * t);
+
+    v.seat = { x, y, scale, side: 'left', r, c, rows: rowsL, cols: colsPerSide };
+    v.flip = false; // Left faces center (right)
+    if (v.state === 'sit') { v.tx = x; v.ty = y; }
   });
 
+  // Right block
   rightIds.forEach((id, i) => {
     const v = visitors.get(id);
     if (!v) return;
-    const t = nR <= 1 ? 0.5 : i / (nR - 1);
+    const r = Math.floor(i / colsPerSide);
+    const c = i % colsPerSide;
+    const t = rowsR <= 1 ? 0.5 : r / (rowsR - 1);
     const y = FLOOR_Y_TOP + (FLOOR_Y_BOT - FLOOR_Y_TOP) * t;
-    const scale = 0.38 + 0.08 * t;
-    v.seat = { x: FLOOR_RIGHT_X, y, scale, side: 'right', r: i, rows: nR };
-    v.flip = true; // Bên phải quay mặt vào giữa (hướng trái)
-    if (v.state === 'sit') { v.tx = FLOOR_RIGHT_X; v.ty = y; }
+
+    const aisleHalf = 85 + 50 * t;
+    const innerX = 540 - aisleHalf;
+    const outerX = 110 - 45 * t;
+    const u = colsPerSide <= 1 ? 0.5 : c / (colsPerSide - 1);
+    const xLeft = outerX + (innerX - outerX) * u;
+    const x = 1080 - xLeft; // Mathematical symmetry
+
+    const baseScale = colsPerSide >= 4 ? 0.27 : colsPerSide === 3 ? 0.31 : 0.38;
+    const scale = (baseScale + 0.10 * t);
+
+    v.seat = { x, y, scale, side: 'right', r, c, rows: rowsR, cols: colsPerSide };
+    v.flip = true; // Right faces center (left)
+    if (v.state === 'sit') { v.tx = x; v.ty = y; }
   });
 
   tagLayoutDirty = true;
 }
 
 function layout(c){
-  cap = c || 24;
+  cap = c || 60;
   reseat();
 }
-document.getElementById('count').textContent = '0/24';
+document.getElementById('count').textContent = '0/60';
 
-/* the three fixed teachers in front of the altar */
 const TEACHERS = [ { skin:'monk', x:270, y:1208, s:.42 }, { skin:'abbot', x:540, y:1212, s:.5, master:true }, { skin:'monk', x:810, y:1208, s:.42 } ];      // on the floor, in front of the altar
 
 function addVisitor(p, instant){
@@ -289,6 +309,18 @@ function showGift(m){
 }
 let chantHide=null;
 function showChant(text){ document.getElementById('chantText').textContent=text; const el=document.getElementById('chant'); el.classList.add('show'); clearTimeout(chantHide); chantHide=setTimeout(()=>el.classList.remove('show'), 14000); }
+
+
+let commentHideTimer = null;
+function showCommentBanner(name, text){
+  const el = document.getElementById('comment-banner');
+  if (!el) return;
+  document.getElementById('cb-name').textContent = name || 'Phật tử';
+  document.getElementById('cb-text').textContent = text || '';
+  el.classList.add('show');
+  clearTimeout(commentHideTimer);
+  commentHideTimer = setTimeout(() => el.classList.remove('show'), 4000);
+}
 
 /* ======================= audio ======================= */
 
@@ -627,7 +659,13 @@ function connect(){
       case 'join': if (m.cap!==cap) layout(m.cap); addVisitor(m.v, m.v.demo && visitors.size>8); updateCount(); break;
       case 'leave': removeVisitor(m.id); updateCount(); renderMerit(); break;
       case 'skin': { const v=visitors.get(m.id); if(v){ v.skin=m.skin; if(v.state!=='sit'){ v.state='sit'; v.frame=7; } } } break;
-      case 'chat': chatQueue.push({id:m.id, text:m.text}); break;
+      case 'chat': {
+        const v = visitors.get(m.id);
+        const name = v ? v.name : (m.name || 'Phật tử');
+        if (v) v.spokeUntil = Date.now() + 20000;
+        showCommentBanner(name, m.text);
+        break;
+      }
       case 'gift': { const v=visitors.get(m.id); if(v){ v.coins=m.total; giftFx(v,m.tier); } offerFx(v,m); renderMerit(); showGift(m); } break;
       case 'like': { const v=visitors.get(m.id); if(v) hearts(v,m.n); } break;
       case 'tts': if (AC || m.tag==='gift') queueTTS(m.url); break;     // before sound is on, gift lines wait; announcements are not worth reading late
@@ -982,77 +1020,24 @@ function frame(now){
       if (r.carry && !incense) drawOffer(r.carry,v.x,r.handY,r.handK);
       if (incense){ for (let j=0;j<3;j++){ const a=(t*.3+j/3)%1; ctx.save(); ctx.globalAlpha=.3*(1-a); stamp(PUFF,r.handX+Math.sin(a*6+j)*(2+a*9),r.handY-6*sk-a*55,.05+a*.14); ctx.restore(); } }
     }
-    const ty=v.y-topY-18*ws/.4-(r?.carry?70*ws/.26:0);
-    const onTheMove=r && !['kneel','bow','rise'].includes(r.phase);
-    if (r){
-      if (!onTheMove){
-        activeTagIds.add(v.id);
-        updateTag(v.id, v.name, v.x, v.y+28, true, v.avatar, true);
-      }
-    }
-    else if (cap<64 || v.coins>0 || now<(v.spokeUntil||0)){
+    const ty = v.y - topY;
+    const onTheMove = r && !['kneel','bow','rise'].includes(r.phase);
+
+    // Name tags: locked directly to each person's cushion, only show when active/donor/interacted or small crowd
+    const shouldShowTag = (visitors.size <= 40) || (v.coins > 0) || (now < (v.spokeUntil || 0)) || (r && !onTheMove);
+    if (shouldShowTag && activeTagIds.size < 40){
       activeTagIds.add(v.id);
-      const isGold = v.coins>=99 || v.skin==='master';
-      const fs = 16;
-      const maxW = 160;
-      const tagH = 26;
-      const avSize = 18;
-      const isLeft = v.seat?.side === 'left' || v.x < 540;
-      const tagX = isLeft ? v.x - 12 : v.x + 12;
-      const tagY = ty - 4;
-      seatTags.push({ id:v.id, name:v.name, x:tagX, y:tagY, baseX:tagX, baseY:tagY, isGold, av:v.avatar, fs, maxW, avSize, w:150, h:tagH });
-    }
-    if (v.bubble && now<v.bubble.until){
-      if (!onTheMove){
-        activeBubbleIds.add(v.id);
-        const isLeft = v.seat?.side === 'left' || v.x < 540;
-        const bX = isLeft ? v.x + 85 : v.x - 85;
-        const bY = ty - 38;
-        updateBubble(v.id, v.bubble.text, bX, bY, true);
-      }
-    } else {
-      v.bubble=null;
+      const isGold = v.coins >= 99 || v.skin === 'master';
+      const tagX = v.x;
+      const tagY = v.y + 14; // Centered right at base of cushion!
+      seatTags.push({ id: v.id, name: v.name, x: tagX, y: tagY, isGold, av: v.avatar, fs: 13, maxW: 110 });
     }
   }
 
-  // Relaxation pass: mathematically resolves tag overlaps when layout updates
-  if (tagLayoutDirty || !seatTags.every(st => visitors.get(st.id)?.tagOffsetX !== undefined)) {
-    for (let iter = 0; iter < 8; iter++) {
-      for (let i = 0; i < seatTags.length; i++) {
-        for (let j = i + 1; j < seatTags.length; j++) {
-          const a = seatTags[i], b = seatTags[j];
-          const dx = a.x - b.x, dy = a.y - b.y;
-          const minX = (a.w + b.w) / 2 + 6, minY = (a.h + b.h) / 2 + 8;
-          const ox = minX - Math.abs(dx), oy = minY - Math.abs(dy);
-          if (ox > 0 && oy > 0) {
-            if (oy < ox * 1.5) {
-              const push = (oy * 0.52) * Math.sign(dy || (i % 2 === 0 ? 1 : -1));
-              a.y += push; b.y -= push;
-            } else {
-              const push = (ox * 0.52) * Math.sign(dx || 1);
-              a.x += push; b.x -= push;
-            }
-          }
-        }
-      }
-    }
-    for (const st of seatTags) {
-      const v = visitors.get(st.id);
-      if (v) {
-        v.tagOffsetX = st.x - st.baseX;
-        v.tagOffsetY = st.y - st.baseY;
-      }
-    }
-    tagLayoutDirty = false;
-  }
-
+  // Draw name tags: exactly at person's cushion, ZERO relaxation drift
   for (const st of seatTags){
-    const v = visitors.get(st.id);
-    const finalX = st.baseX + (v?.tagOffsetX || 0);
-    const finalY = st.baseY + (v?.tagOffsetY || 0);
-    updateTag(st.id, st.name, finalX, finalY, st.isGold, st.av, true, st.fs, st.maxW, st.avSize);
+    updateTag(st.id, st.name, st.x, st.y, st.isGold, st.av, true, st.fs, st.maxW);
   }
-
   pruneTags(activeTagIds);
   pruneBubbles(activeBubbleIds);
   // offerings being set down, petals / hearts
