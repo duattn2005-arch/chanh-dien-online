@@ -47,66 +47,69 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:var(-
 .name-tag.gold .tag-name{color:#ffd98a;font-weight:700}
 
 /* Dedicated clean comment banner in center aisle */
-#comment-banner{
-  position:absolute;left:50%;top:1130px;transform:translateX(-50%) scale(.95);
-  z-index:7;padding:8px 24px;border-radius:22px;
-  background:linear-gradient(180deg,rgba(40,16,6,.96),rgba(20,8,3,.96));
-  border:2px solid var(--gold);box-shadow:0 8px 30px rgba(0,0,0,.9),0 0 15px rgba(226,176,79,.3);
-  display:flex;align-items:center;gap:10px;max-width:560px;
-  opacity:0;pointer-events:none;transition:opacity .35s,transform .35s cubic-bezier(.2,1.3,.4,1);
+/* Bottom Comment Bar (Exact match to temple livestream photo) */
+#comment-bar{
+  position:absolute;left:50%;bottom:24px;transform:translateX(-50%);
+  z-index:7;width:860px;height:56px;box-sizing:border-box;padding:0 24px;border-radius:28px;
+  background:linear-gradient(180deg,#381206,#1c0802);
+  border:2px solid var(--gold);box-shadow:0 6px 25px rgba(0,0,0,.85),0 0 12px rgba(226,176,79,.3);
+  display:flex;align-items:center;gap:12px;font-family:var(--body);
+  transition:all .35s ease;
 }
-#comment-banner.show{
-  opacity:1;transform:translateX(-50%) scale(1);
-}
-.cb-icon{font-size:22px}
-.cb-name{font-family:var(--body);font-weight:700;font-size:22px;color:var(--gold2);white-space:nowrap}
-.cb-colon{color:var(--gold);font-weight:700}
-.cb-text{font-family:var(--body);font-weight:500;font-size:22px;color:#fff8ea;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-/* title plaque */
-#plaque{left:90px;right:90px;top:70px;height:150px;border:3px solid var(--gold);border-radius:28px;
-  background:linear-gradient(180deg,rgba(70,26,10,.92),rgba(30,12,6,.92));box-shadow:0 0 0 6px rgba(0,0,0,.35),0 0 50px rgba(226,176,79,.25) inset;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
-#plaque::before,#plaque::after{content:"❁";position:absolute;top:50%;transform:translateY(-50%);font-size:44px;color:var(--gold)}
-#plaque::before{left:34px}#plaque::after{right:34px}
-#title{font-family:var(--display);font-weight:700;font-size:58px;letter-spacing:.06em;color:var(--gold2);text-transform:uppercase;text-shadow:0 2px 0 #3a1406,0 0 20px rgba(255,200,100,.35)}
-#subtitle{font-family:var(--display);font-size:30px;letter-spacing:.12em;color:var(--fg)}
-/* pills */
-#pills{top:244px;left:0;right:0;display:flex;justify-content:center;gap:26px}
-.pill{background:var(--panel);border:2px solid var(--line);border-radius:999px;padding:12px 28px;font-size:34px;font-weight:600;display:flex;align-items:center;gap:14px;font-variant-numeric:tabular-nums}
-.pill small{font-size:20px;font-weight:500;color:var(--muted);line-height:1.05}
-.dot{width:18px;height:18px;border-radius:50%;background:#46d36b;box-shadow:0 0 12px #46d36b}
+.cb-icon{font-size:24px;flex-shrink:0}
+.cb-label{font-weight:700;font-size:22px;color:var(--gold2);letter-spacing:.02em;flex-shrink:0}
+.cb-text{font-weight:500;font-size:21px;color:#fff6e4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+/* title plaque & gift banner */
+#plaque{left:40px;right:40px;top:76px;height:130px;box-sizing:border-box;border:3px solid var(--gold);border-radius:26px;
+  background:linear-gradient(180deg,rgba(70,22,10,.95),rgba(32,10,4,.95));box-shadow:0 8px 30px rgba(0,0,0,.85),0 0 25px rgba(226,176,79,.25);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;z-index:5}
+#plaque::before,#plaque::after{content:"🪷";position:absolute;top:50%;transform:translateY(-50%);font-size:38px;color:var(--gold)}
+#plaque::before{left:26px}#plaque::after{right:26px}
+#title{font-family:var(--display);font-weight:700;font-size:42px;letter-spacing:.05em;color:var(--gold2);text-shadow:0 2px 4px #000,0 0 15px rgba(255,217,138,.35)}
+#subtitle{font-family:var(--display);font-size:22px;letter-spacing:.08em;color:var(--fg);opacity:.95}
+#subpray{font-family:var(--display);font-style:italic;font-size:20px;color:var(--gold2);opacity:.9}
+
+/* pills at top */
+#pills{top:16px;left:0;right:0;display:flex;justify-content:center;gap:20px;z-index:6}
+.pill{background:rgba(28,10,4,.92);border:2px solid var(--gold);border-radius:999px;padding:8px 24px;font-size:26px;font-weight:700;display:flex;align-items:center;gap:12px;font-variant-numeric:tabular-nums;color:#fff6e4;box-shadow:0 4px 18px rgba(0,0,0,.75)}
+.pill small{font-size:19px;font-weight:600;color:var(--gold2);line-height:1}
+.dot{width:16px;height:16px;border-radius:50%;background:#3ae368;box-shadow:0 0 12px #3ae368}
+
 /* side cards */
-.card{background:var(--panel);border:2px solid var(--line);border-radius:22px;padding:18px 22px;font-size:25px;line-height:1.4}
-#guide{left:24px;top:482px;width:290px}
-#guide h3{margin:0 0 8px;font-family:var(--display);font-size:30px;color:var(--gold2);letter-spacing:.06em;text-align:center}
+.card{background:var(--panel);border:2px solid var(--line);border-radius:22px;padding:16px 20px;font-size:23px;line-height:1.35;box-shadow:0 8px 25px rgba(0,0,0,.8)}
+#guide{left:24px;top:222px;width:290px}
+#guide h3{margin:0 0 6px;font-family:var(--display);font-size:28px;color:var(--gold2);letter-spacing:.06em;text-align:center}
 #ladder{margin:0;padding:0;list-style:none;display:grid;gap:0}
-#ladder li{display:flex;justify-content:space-between;gap:10px;font-size:21px;line-height:1.3}
+#ladder li{display:flex;justify-content:space-between;gap:10px;font-size:20px;line-height:1.28}
 #ladder li span:last-child{color:var(--gold2);font-variant-numeric:tabular-nums}
-#guide .hint{border-top:1px solid rgba(226,176,79,.3);margin-top:10px;padding-top:8px;font-size:21px;line-height:1.3;color:var(--muted)}
+#guide .hint{border-top:1px solid rgba(226,176,79,.3);margin-top:8px;padding-top:6px;font-size:19px;line-height:1.25;color:var(--muted)}
 #guide .hint b{color:var(--gold2)}
-#merit{right:24px;top:482px;width:290px;text-align:center}
-#merit h3{margin:0 0 8px;font-family:var(--display);font-size:30px;color:var(--gold2);letter-spacing:.06em}
-#merit ol{margin:0;padding:0;list-style:none;text-align:left;display:grid;gap:6px}
-#merit li{display:flex;justify-content:space-between;gap:10px}
+#merit{right:24px;top:222px;width:290px;text-align:center}
+#merit h3{margin:0 0 6px;font-family:var(--display);font-size:28px;color:var(--gold2);letter-spacing:.06em}
+#merit ol{margin:0;padding:0;list-style:none;text-align:left;display:grid;gap:5px}
+#merit li{display:flex;justify-content:space-between;gap:10px;font-size:21px}
 #merit li span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #merit li span:last-child{color:var(--gold2);font-variant-numeric:tabular-nums}
 #merit .empty{color:var(--muted);text-align:center}
-/* chant banner + gift banner: in the strip between the pills and the Buddha's head, so they cover neither the Buddha nor the viewers */
-#chant{left:70px;right:70px;top:318px;max-height:158px;overflow:hidden;box-sizing:border-box;padding:10px 26px;text-align:center;border-radius:24px;border:2px solid var(--gold);
-  background:rgba(40,18,8,.86);opacity:0;transform:translateY(20px);transition:opacity .6s,transform .6s}
+
+/* chant banner + gift banner */
+#chant{left:40px;right:40px;top:76px;height:130px;box-sizing:border-box;padding:12px 28px;text-align:center;border-radius:26px;border:3px solid var(--gold);
+  background:linear-gradient(180deg,rgba(50,18,8,.96),rgba(24,8,3,.96));opacity:0;transform:translateY(-10px);transition:opacity .4s,transform .4s;z-index:6;box-shadow:0 8px 30px rgba(0,0,0,.85)}
 #chant.show{opacity:1;transform:none}
-#chant h4{margin:0 0 4px;font-family:var(--display);color:var(--gold2);font-size:24px;letter-spacing:.1em}
-#chant p{margin:0;font-family:var(--display);font-style:italic;font-size:26px;line-height:1.3}
-#gift{left:50px;right:50px;top:318px;z-index:5;box-sizing:border-box;padding:10px 30px;text-align:center;border-radius:28px;border:3px solid var(--gold2);
-  background:radial-gradient(ellipse at 50% 0%,rgba(150,40,20,.95),rgba(50,14,6,.95));box-shadow:0 0 60px rgba(255,190,90,.45);
-  opacity:0;transform:scale(.85);transition:opacity .45s,transform .45s cubic-bezier(.2,1.4,.4,1)}
+#chant h4{margin:0 0 4px;font-family:var(--display);color:var(--gold2);font-size:22px;letter-spacing:.1em}
+#chant p{margin:0;font-family:var(--display);font-style:italic;font-size:24px;line-height:1.3;color:#fff6e4}
+
+#gift{left:40px;right:40px;top:76px;height:130px;z-index:7;box-sizing:border-box;padding:10px 36px;text-align:center;border-radius:26px;border:3px solid var(--gold2);
+  background:radial-gradient(ellipse at 50% 10%,#882012,#2e0904);box-shadow:0 0 50px rgba(255,190,90,.4),0 8px 30px rgba(0,0,0,.85);
+  opacity:0;transform:scale(.92);transition:opacity .35s,transform .35s cubic-bezier(.2,1.3,.4,1)}
+#gift::before,#gift::after{content:"🪷";position:absolute;top:50%;transform:translateY(-50%);font-size:38px;color:var(--gold2)}
+#gift::before{left:26px}#gift::after{right:26px}
 #gift.show{opacity:1;transform:none}
 #gift .who,#gift .what,#gift .pray{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#gift .who{font-family:var(--display);font-weight:700;font-size:44px;line-height:1.2;color:var(--gold2)}
-#gift .what{font-size:29px;margin-top:2px}
-#gift .pray{font-family:var(--display);font-style:italic;font-size:27px;color:var(--fg);margin-top:4px;opacity:.95}
-/* enable sound (needed once: browsers block autoplay) */
-#unmute{position:absolute;z-index:9;left:50%;top:1540px;transform:translateX(-50%);font:600 36px var(--body);padding:22px 44px;border-radius:24px;border:3px solid var(--gold2);background:var(--red);color:#fff4dc;cursor:pointer}
+#gift .who{font-family:var(--display);font-weight:700;font-size:38px;line-height:1.15;color:var(--gold2);text-shadow:0 2px 4px #000}
+#gift .what{font-size:23px;margin-top:2px;color:#fff2d6}
+#gift .pray{font-family:var(--display);font-style:italic;font-size:21px;color:var(--gold2);margin-top:2px;opacity:.95}
+
 #conn{position:absolute;z-index:4;right:16px;bottom:12px;font-size:20px;color:var(--muted);opacity:.6}
 
 /* YouTube music player card */
@@ -134,10 +137,14 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:var(-
   <canvas id="c" width="1080" height="1920"></canvas>
   <div id="tags-layer"></div>
   <div id="bubbles-layer"></div>
-  <div id="plaque" class="ui"><div id="title">Chánh Điện Tịnh Tâm</div><div id="subtitle">Nam Mô A Di Đà Phật</div></div>
   <div id="pills" class="ui">
-    <div class="pill"><span class="dot"></span><span id="count">0/24</span><small>đang<br>thiền</small></div>
+    <div class="pill"><span class="dot"></span><span id="count">0/60</span><small>đang thiền</small></div>
     <div class="pill">⏱ <span id="timer">00:00:00</span></div>
+  </div>
+  <div id="plaque" class="ui">
+    <div id="title">Chánh Điện Tịnh Tâm</div>
+    <div id="subtitle">thành tâm kính Phật · cầu an giải hạn · tích lũy công đức</div>
+    <div id="subpray">“Nam Mô Bổn Sư Thích Ca Mâu Ni Phật”</div>
   </div>
   <div id="guide" class="card ui">
     <h3>✦ Dâng Cúng ✦</h3>
@@ -146,7 +153,11 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:var(-
   </div>
   <div id="merit" class="card ui"><h3>✦ Công Đức ✦</h3><ol id="meritList"><li class="empty">Chưa có</li></ol></div>
   <div id="chant" class="ui"><h4>✦ TỤNG KINH ĐỊNH KỲ ✦</h4><p id="chantText"></p></div>
-  <div id="comment-banner" class="ui"><span class="cb-icon">💬</span><span id="cb-name" class="cb-name"></span><span class="cb-colon">:</span><span id="cb-text" class="cb-text"></span></div>
+  <div id="comment-bar" class="ui">
+    <span class="cb-icon">💬</span>
+    <span class="cb-label">Bình luận:</span>
+    <span id="cb-text" class="cb-text">Nam mô A Di Đà Phật, cầu cho gia đình an lạc 🙏</span>
+  </div>
   <div id="gift" class="ui"><div class="who" id="giftWho"></div><div class="what" id="giftWhat"></div><div class="pray" id="giftPray"></div></div>
   <div id="yt-card" class="card ui">
     <div class="yt-header">
@@ -165,7 +176,6 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:var(-
       </div>
     </div>
   </div>
-  <button id="unmute">🔔 Bấm để bật âm thanh</button>
   <div id="conn">đang kết nối…</div>
 </div></div>
 
@@ -192,13 +202,15 @@ const avatars = new Map();
 function avatar(url){ if(!url) return null; let im=avatars.get(url); if(!im){ im=new Image(); im.referrerPolicy='no-referrer'; im.src=url; avatars.set(url,im); } return im.naturalWidth?im:null; }
 
 /* ======================= seats: Chia Đều Hai Bên Chánh Điện ======================= */
-const FLOOR_Y_TOP = 1320;
-const FLOOR_Y_BOT = 1845;
+const FLOOR_Y_TOP = 1140;
+const FLOOR_Y_BOT = 1810;
 const FLOOR = { yTop: FLOOR_Y_TOP, yBot: FLOOR_Y_BOT };
 let cap = 60, seats = [];
 const visitors = new Map();  // id -> visitor
 let order = [];               // ids in seating order
 let tagLayoutDirty = true;
+window.visitors = visitors;
+window.order = order;
 
 function reseat(){
   order = order.filter(id => visitors.has(id));
@@ -209,7 +221,7 @@ function reseat(){
   const nR = Math.floor(total / 2);
 
   // Dynamic columns per side:
-  // <= 6 -> 1 col, <= 15 -> 2 cols, <= 36 -> 3 cols (e.g. 60 people = 30 per side = 3 cols x 10 rows), <= 55 -> 4 cols, > 55 -> 5 cols
+  // <= 6 -> 1 col, <= 15 -> 2 cols, <= 36 -> 3 cols (60 people = 30 per side = 3 cols x 10 rows), <= 55 -> 4 cols, > 55 -> 5 cols
   const colsPerSide = nL <= 6 ? 1 : nL <= 15 ? 2 : nL <= 36 ? 3 : nL <= 55 ? 4 : 5;
   const rowsL = Math.max(1, Math.ceil(nL / colsPerSide));
   const rowsR = Math.max(1, Math.ceil(nR / colsPerSide));
@@ -217,7 +229,7 @@ function reseat(){
   const leftIds = order.filter((_, idx) => idx % 2 === 0);
   const rightIds = order.filter((_, idx) => idx % 2 === 1);
 
-  // Left block
+  // Left block: grouped strictly on left side, aisle 100% open
   leftIds.forEach((id, i) => {
     const v = visitors.get(id);
     if (!v) return;
@@ -226,22 +238,21 @@ function reseat(){
     const t = rowsL <= 1 ? 0.5 : r / (rowsL - 1);
     const y = FLOOR_Y_TOP + (FLOOR_Y_BOT - FLOOR_Y_TOP) * t;
 
-    // Perspective aisle: 170px wide at top, 270px wide at bottom
-    const aisleHalf = 85 + 50 * t;
-    const innerX = 540 - aisleHalf;
-    const outerX = 110 - 45 * t;
+    // Left columns: outer (c=0) to inner (c=colsPerSide-1)
+    const outerX = 90 + 15 * t;
+    const innerX = 310;
     const u = colsPerSide <= 1 ? 0.5 : c / (colsPerSide - 1);
     const x = outerX + (innerX - outerX) * u;
 
-    const baseScale = colsPerSide >= 4 ? 0.27 : colsPerSide === 3 ? 0.31 : 0.38;
-    const scale = (baseScale + 0.10 * t);
+    const baseScale = colsPerSide >= 4 ? 0.26 : colsPerSide === 3 ? 0.30 : 0.36;
+    const scale = (baseScale + 0.11 * t);
 
     v.seat = { x, y, scale, side: 'left', r, c, rows: rowsL, cols: colsPerSide };
     v.flip = false; // Left faces center (right)
-    if (v.state === 'sit') { v.tx = x; v.ty = y; }
+    if (v.state === 'sit') { v.x = v.tx = x; v.y = v.ty = y; }
   });
 
-  // Right block
+  // Right block: grouped strictly on right side, aisle 100% open
   rightIds.forEach((id, i) => {
     const v = visitors.get(id);
     if (!v) return;
@@ -250,19 +261,18 @@ function reseat(){
     const t = rowsR <= 1 ? 0.5 : r / (rowsR - 1);
     const y = FLOOR_Y_TOP + (FLOOR_Y_BOT - FLOOR_Y_TOP) * t;
 
-    const aisleHalf = 85 + 50 * t;
-    const innerX = 540 - aisleHalf;
-    const outerX = 110 - 45 * t;
+    // Right columns: inner (c=0) to outer (c=colsPerSide-1)
+    const innerX = 770;
+    const outerX = 990 - 15 * t;
     const u = colsPerSide <= 1 ? 0.5 : c / (colsPerSide - 1);
-    const xLeft = outerX + (innerX - outerX) * u;
-    const x = 1080 - xLeft; // Mathematical symmetry
+    const x = innerX + (outerX - innerX) * u;
 
-    const baseScale = colsPerSide >= 4 ? 0.27 : colsPerSide === 3 ? 0.31 : 0.38;
-    const scale = (baseScale + 0.10 * t);
+    const baseScale = colsPerSide >= 4 ? 0.26 : colsPerSide === 3 ? 0.30 : 0.36;
+    const scale = (baseScale + 0.11 * t);
 
     v.seat = { x, y, scale, side: 'right', r, c, rows: rowsR, cols: colsPerSide };
     v.flip = true; // Right faces center (left)
-    if (v.state === 'sit') { v.tx = x; v.ty = y; }
+    if (v.state === 'sit') { v.x = v.tx = x; v.y = v.ty = y; }
   });
 
   tagLayoutDirty = true;
@@ -274,8 +284,12 @@ function layout(c){
 }
 document.getElementById('count').textContent = '0/60';
 
-const TEACHERS = [ { skin:'monk', x:270, y:1208, s:.42 }, { skin:'abbot', x:540, y:1212, s:.5, master:true }, { skin:'monk', x:810, y:1208, s:.42 } ];      // on the floor, in front of the altar
+const TEACHERS = [
+  { skin: 'monk', x: 205, y: 1015, s: .44 },
+  { skin: 'monk', x: 875, y: 1015, s: .44, flip: true }
+];      // on the floor, in front of the altar
 
+window.addVisitor = addVisitor;
 function addVisitor(p, instant){
   if (visitors.has(p.id)) { Object.assign(visitors.get(p.id), { name:p.name, skin:p.skin, avatar:p.avatar, coins:p.coins }); return; }
   const v = { ...p, state:'walk', x:540, y:2020, tx:0, ty:0, frame:0, ft:0, sitT:0, flip:false, fade:0, bubble:null, glow:0, bow:0, phase:Math.random()*6.28 };
@@ -300,6 +314,8 @@ function renderLadder(offers){
 }
 setInterval(()=>{ const s=Math.floor((Date.now()-startedAt)/1000); document.getElementById('timer').textContent=[s/3600,s/60%60,s%60].map(x=>String(Math.floor(x)).padStart(2,'0')).join(':'); },1000);
 let giftHide=null;
+window.showGift = showGift;
+window.showGift = showGift;
 function showGift(m){
   document.getElementById('giftWho').textContent = m.name;
   document.getElementById('giftWhat').textContent = `thành tâm dâng ${m.offerName} · ${m.giftName}${m.count>1?' ×'+m.count:''} · công đức ${m.total}`;
@@ -313,13 +329,19 @@ function showChant(text){ document.getElementById('chantText').textContent=text;
 
 let commentHideTimer = null;
 function showCommentBanner(name, text){
-  const el = document.getElementById('comment-banner');
-  if (!el) return;
-  document.getElementById('cb-name').textContent = name || 'Phật tử';
-  document.getElementById('cb-text').textContent = text || '';
-  el.classList.add('show');
+  const el = document.getElementById('comment-bar');
+  const txtEl = document.getElementById('cb-text');
+  if (!el || !txtEl) return;
+  const userText = text || 'Nam mô A Di Đà Phật';
+  txtEl.textContent = `${name || 'Phật tử'}: ${userText} 🙏`;
+  el.style.borderColor = '#ffd98a';
+  el.style.boxShadow = '0 6px 30px rgba(255,217,138,.45)';
   clearTimeout(commentHideTimer);
-  commentHideTimer = setTimeout(() => el.classList.remove('show'), 4000);
+  commentHideTimer = setTimeout(() => {
+    el.style.borderColor = 'var(--gold)';
+    el.style.boxShadow = '0 6px 25px rgba(0,0,0,.85),0 0 12px rgba(226,176,79,.3)';
+    txtEl.textContent = 'Nam mô A Di Đà Phật, cầu cho gia đình an lạc 🙏';
+  }, 4000);
 }
 
 /* ======================= audio ======================= */
@@ -447,7 +469,6 @@ if (valTextYt) valTextYt.textContent = ytUserVol + '%';
 
 let AC=null, master=null, musicGain=null, sfx=null, settings={ music:true, mo:true, moBpm:52 };
 const TRACKS=['/assets/music/music1.mp3','/assets/music/music2.mp3']; let trackIdx=Math.floor(Math.random()*TRACKS.length), musicEl=null;
-document.getElementById('unmute').onclick = e => { e.currentTarget.remove(); startAudio(); ytUnmuteAndPlay(); };
 function startAudio(){
   AC = new (window.AudioContext||window.webkitAudioContext)();
   master = AC.createGain(); master.gain.value=.9; master.connect(AC.destination);
@@ -499,9 +520,35 @@ function giftFx(v, tier){ if (tier>=3) bell(true); }     // nothing flies about:
    One person at a time: everyone else lines up along the middle aisle with their offering in hand. */
 const OFFER_W={huong:70,sen:56,nen:34,nguqua:50,banh:54,xoi:56};
 const OFFER_PARTS={lequa:['nguqua','sen'],lexoi:['xoi','nguqua'],lechay:['nguqua','xoi','banh'],daile:['nguqua','xoi','banh','sen']};     // the larger offerings are several dishes, all vegetarian
-const ALTAR_SPOTS=[[402,1126],[678,1126],[342,1126],[738,1126],[462,1126],[618,1126]], CENSER=[540,962], OFFER_STAY=60;     // spaced so offerings never cover each other
+// Expanded 28-spot collision-free Altar Table (Left & Right Wings + Overflow Side Trays)
+// Spaced collision-free spots on left and right wings of the altar table
+const ALTAR_SPOTS = [
+  // Left Wing (Tier 1 front, Tier 2 mid, Tier 3 back)
+  [270, 990], [330, 990], [390, 990], [450, 990],
+  [250, 1018], [310, 1018], [370, 1018], [430, 1018],
+  [230, 1046], [290, 1046], [350, 1046], [410, 1046],
+  // Right Wing (Tier 1 front, Tier 2 mid, Tier 3 back)
+  [630, 990], [690, 990], [750, 990], [810, 990],
+  [650, 1018], [710, 1018], [770, 1018], [830, 1018],
+  [670, 1046], [730, 1046], [790, 1046], [850, 1046],
+  // Side shelves
+  [180, 1015], [180, 1050], [900, 1015], [900, 1050]
+];
+const CENSER = [540, 962], OFFER_STAY = 240; // 4 minutes stay
+function getFreeAltarSpot() {
+  for (let i = 0; i < ALTAR_SPOTS.length; i++) {
+    if (!altar[i]) return i;
+  }
+  let oldestIdx = 0, oldestTime = Infinity;
+  for (let i = 0; i < altar.length; i++) {
+    if (altar[i] && altar[i].at < oldestTime) {
+      oldestTime = altar[i].at; oldestIdx = i;
+    }
+  }
+  return oldestIdx;
+}
 const altar=new Array(ALTAR_SPOTS.length).fill(null), placing=[], sticks=[]; let nextSpot=0, nextStick=0, smokeBoost=0;
-const LANES=[[540,1335]], LANE_SCALE=.58, LANE_APPROACH=1335, ALTAR_Y=1192, ALTAR_SCALE=.5, QUEUE_Y=1500, QUEUE_GAP=135, QUEUE_SCALE=.31, MAX_LINE=4, SIDE_LANE=62, laneBusy=[null], riteQueue=[];     // as large as the teachers, so the bowing reads on a phone
+const LANES=[[540,1420]], LANE_SCALE=.58, LANE_APPROACH=1420, ALTAR_Y=1000, ALTAR_SCALE=.52, QUEUE_Y=1660, QUEUE_GAP=140, QUEUE_SCALE=.34, MAX_LINE=3, SIDE_LANE=160, laneBusy=[null], riteQueue=[];     // as large as the teachers, so the bowing reads on a phone
 const STICK_X=[0,-14,14,-26,26,-7,7,-20,20,-32,32,-3], STICK_BASE=[537,958], STICK_LIFE=180;
 // Only man, woman and granny have walking frames: the other outfits borrow one for the rite, recoloured to match.
 const RITE_BODY={monk:'man',master:'man',child:'man',nun:'woman',granny:'woman'}, RITE_TONE={monk:'rgba(140,72,22,.62)',master:'rgba(160,84,18,.62)',nun:'rgba(120,84,50,.55)',granny:'rgba(110,62,28,.5)'}, riteStrips={};
@@ -539,6 +586,8 @@ function riteStrip(body,skin,kind){
   if (!riteStrips[skin+kind]){ riteStrips[skin+kind]=makeSprite(im.naturalWidth,im.naturalHeight,g=>{ g.drawImage(im,0,0); g.globalCompositeOperation='source-atop'; g.fillStyle=RITE_TONE[skin]; g.fillRect(0,0,im.naturalWidth,im.naturalHeight); }); riteStrips[skin+kind].src='strip:'+skin+kind; }
   return riteStrips[skin+kind];
 }
+window.offerFx = offerFx;
+window.offerFx = offerFx;
 function offerFx(v, m){
   if (!v) return;
   // every gift is honoured: a burst of roses from one person is one trip that plants all their sticks
@@ -558,7 +607,7 @@ function startRites(){
     const [x,y]=LANES[i];
     // the offering is set down by hand: walk right up to the altar, beside the abbot, then back to the mat to bow
     let spots=[];
-    for (const key of q.items){ if (key==='huong'){ spots.push(-1); continue; } spots.push(nextSpot); nextSpot=(nextSpot+1)%ALTAR_SPOTS.length; }
+    for (const key of q.items){ if (key==='huong'){ spots.push(-1); continue; } const sp = getFreeAltarSpot(); spots.push(sp); altar[sp] = { key, at: Date.now() + 999999 }; }
     const tx=spots[0]<0?CENSER[0]:ALTAR_SPOTS[spots[0]][0], reach=tx<540?Math.min(tx,445):Math.max(tx,635), side=spots[0]<0?445:reach;
     v.rite=makeRite(v,q,{phase:'go',lane:i,spots,fromSeat:!v.rite,path:[...(v.rite?[]:toSideLane(v,LANE_APPROACH)),[540,LANE_APPROACH],[side,ALTAR_Y]]});
     laneBusy[i]=q.id;
@@ -902,12 +951,23 @@ function monkArm(x,y,dir,hit){
   ctx.restore();
 }
 function drawAltar(now,t){
-  ctx.drawImage(MAT,LANES[0][0]-125,LANES[0][1]-34,250,62);
+  // 1. Prayer Mat in center aisle
+  ctx.drawImage(MAT, 540 - 130, 1420 - 32, 260, 64);
+
+  // 2. Persistent Censer Incense Sticks & Smoke
   drawSticks(now,t);
-  for (let i=0;i<altar.length;i++){ const o=altar[i]; if(!o) continue; const age=(now-o.at)/1000; if (age>OFFER_STAY){ altar[i]=null; continue; }
-    ctx.save(); ctx.globalAlpha=Math.min(1,OFFER_STAY-age); const [x,y]=ALTAR_SPOTS[i];
-    drawOffer(o.key,x,y);
-    ctx.restore(); }
+
+  // 3. Offerings cleanly positioned on table spots
+  for (let i=0;i<altar.length;i++){
+    const o=altar[i]; if(!o) continue;
+    const age=(now-o.at)/1000;
+    if (age>OFFER_STAY){ altar[i]=null; continue; }
+    ctx.save();
+    ctx.globalAlpha=Math.min(1,OFFER_STAY-age);
+    const [x,y]=ALTAR_SPOTS[i];
+    drawOffer(o.key,x,y,0.92);
+    ctx.restore();
+  }
 }
 // the last short reach from the giver's raised hands onto the altar
 function drawPlacing(dt,now,t){
@@ -948,7 +1008,7 @@ function frame(now){
   if (riteQueue.length) startRites();
   // teachers: the one on the left keeps time on the wooden fish, the one on the right strikes the bell
   moHit=Math.max(0,moHit-dt*4.5); bellHit=Math.max(0,bellHit-dt*2.2);
-  monkArm(254,1144,-1,moHit); monkArm(826,1144,1,bellHit);
+  monkArm(189,951,-1,moHit); monkArm(891,951,1,bellHit);
   for (const tc of TEACHERS){
     if (tc.master){
       ctx.save(); ctx.globalCompositeOperation='lighter'; ctx.globalAlpha=.3+.08*Math.sin(t*1.5);
@@ -1015,10 +1075,43 @@ function frame(now){
     ctx.restore();
     if (r){
       // the strips show the hands: the sticks are in the right hand, and an offering rests on the two raised hands
-      const sk=ws*1.3, incense=r.carry==='huong', dir=v.flip?-1:1;
-      r.handX=incense?v.x+dir*36*sk:v.x; r.handY=incense?v.y-284*sk:v.y-272*sk; r.handK=ws*2.1;
-      if (r.carry && !incense) drawOffer(r.carry,v.x,r.handY,r.handK);
-      if (incense){ for (let j=0;j<3;j++){ const a=(t*.3+j/3)%1; ctx.save(); ctx.globalAlpha=.3*(1-a); stamp(PUFF,r.handX+Math.sin(a*6+j)*(2+a*9),r.handY-6*sk-a*55,.05+a*.14); ctx.restore(); } }
+      const sk=ws*1.3, incense=r.carry==='huong';
+      // Bắt buộc dùng cả hai tay cầm hương hoặc nâng lễ vật đối xứng ở giữa ngực / trán
+      r.handX = v.x;
+      r.handY = incense ? v.y - 280*sk : v.y - 265*sk;
+      r.handK = ws * 2.1;
+
+      // Vẽ hai tay áo / bàn tay nâng lễ vật hoặc cầm nén hương
+      ctx.save();
+      ctx.fillStyle = RITE_TONE[v.skin] || '#d49b6a';
+      // Tay trái và tay phải nâng đối xứng
+      ctx.beginPath();
+      ctx.arc(v.x - 14*sk, r.handY + 12*sk, 7*sk, 0, 6.28);
+      ctx.arc(v.x + 14*sk, r.handY + 12*sk, 7*sk, 0, 6.28);
+      ctx.fill();
+      ctx.restore();
+
+      if (r.carry && !incense) {
+        drawOffer(r.carry, v.x, r.handY, r.handK);
+      }
+      if (incense){
+        // 3 nén hương thẳng đứng giữa hai tay, tàn hương đỏ rực
+        const ih = 70 * sk;
+        ctx.save();
+        ctx.strokeStyle = '#8b2500';
+        ctx.lineWidth = 2.5 * sk;
+        for (let k = -1; k <= 1; k++) {
+          const ix = v.x + k * 6 * sk;
+          ctx.beginPath(); ctx.moveTo(ix, r.handY + 14*sk); ctx.lineTo(ix, r.handY - ih); ctx.stroke();
+          ember(ix, r.handY - ih, 0.22, t, k);
+        }
+        for (let j=0;j<3;j++){
+          const a=(t*.3+j/3)%1;
+          ctx.globalAlpha=.35*(1-a);
+          stamp(PUFF,v.x+Math.sin(a*6+j)*(2+a*8),r.handY-ih-a*65,.05+a*.15);
+        }
+        ctx.restore();
+      }
     }
     const ty = v.y - topY;
     const onTheMove = r && !['kneel','bow','rise'].includes(r.phase);
@@ -1067,12 +1160,9 @@ function tick(now){
 }
 onFit=applyScale; applyScale();
 layout(24); requestAnimationFrame(tick);
-// ?auto is for a page nobody can click, such as a Link source in LIVE Studio or mo-overlay.bat: no button on screen, and sound starts as soon as the browser allows it
-if (new URLSearchParams(location.search).has('auto')){
-  document.getElementById('unmute').remove();
-  const probe=new (window.AudioContext||window.webkitAudioContext)();
-  const tryStart=setInterval(()=>{ probe.resume(); if (probe.state==='running'){ clearInterval(tryStart); probe.close(); startAudio(); ytUnmuteAndPlay(); } },1000);
-}
+// no button on the live screen: sound starts as soon as the browser allows it; if autoplay is blocked, one click or key press in the overlay window allows it
+const probe=new (window.AudioContext||window.webkitAudioContext)();
+const tryStart=setInterval(()=>{ probe.resume(); if (probe.state==='running'){ clearInterval(tryStart); probe.close(); startAudio(); ytUnmuteAndPlay(); } },1000);
 </script>
 </body>
 </html>
