@@ -103,8 +103,26 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:var(-
 /* enable sound (needed once: browsers block autoplay) */
 #unmute{position:absolute;z-index:9;left:50%;top:1540px;transform:translateX(-50%);font:600 36px var(--body);padding:22px 44px;border-radius:24px;border:3px solid var(--gold2);background:var(--red);color:#fff4dc;cursor:pointer}
 #conn{position:absolute;z-index:4;right:16px;bottom:12px;font-size:20px;color:var(--muted);opacity:.6}
+
+/* YouTube music player card */
+#yt-card{left:24px;top:836px;width:290px;box-sizing:border-box;padding:12px;background:var(--panel);border:2px solid var(--line);border-radius:20px;z-index:4;box-shadow:0 8px 30px rgba(0,0,0,.6)}
+.yt-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.yt-title{font-family:var(--display);font-size:20px;font-weight:700;color:var(--gold2);letter-spacing:.05em}
+.yt-badge{font-size:14px;padding:3px 8px;border-radius:10px;background:rgba(70,211,107,.25);color:#46d36b;font-weight:600;font-family:var(--body)}
+.yt-badge.paused{background:rgba(230,126,34,.25);color:#e67e22}
+.yt-badge.loading{background:rgba(226,176,79,.25);color:var(--gold2)}
+.yt-player-box{width:100%;height:148px;border-radius:12px;overflow:hidden;background:#000;border:1.5px solid rgba(226,176,79,.4);box-shadow:0 2px 10px rgba(0,0,0,.8)}
+.yt-player-box iframe{width:100%;height:100%;border:none;display:block}
+.yt-controls{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.yt-btn{padding:8px 12px;border-radius:12px;border:1.5px solid var(--gold);background:linear-gradient(180deg,#4a1b0c,#2c1007);color:var(--gold2);font-family:var(--body);font-size:18px;font-weight:600;cursor:pointer;transition:all .2s;text-align:center}
+.yt-btn:hover{background:linear-gradient(180deg,#632410,#3c160a);border-color:var(--gold2)}
+.yt-vol-wrap{display:flex;align-items:center;gap:8px;font-size:17px;color:var(--fg);font-family:var(--body)}
+.yt-slider{flex:1;accent-color:var(--gold);cursor:pointer;height:6px}
+#yt-vol-val{font-variant-numeric:tabular-nums;min-width:38px;text-align:right;font-size:16px;color:var(--gold2);font-family:var(--body);font-weight:600}
+
 @media (prefers-reduced-motion:reduce){#chant,#gift{transition:none}}
 </style>
+  <script src="https://www.youtube.com/iframe_api"></script>
 </head>
 <body>
 <div id="fit"><div id="stage">
@@ -124,6 +142,23 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:var(-
   <div id="merit" class="card ui"><h3>✦ Công Đức ✦</h3><ol id="meritList"><li class="empty">Chưa có</li></ol></div>
   <div id="chant" class="ui"><h4>✦ TỤNG KINH ĐỊNH KỲ ✦</h4><p id="chantText"></p></div>
   <div id="gift" class="ui"><div class="who" id="giftWho"></div><div class="what" id="giftWhat"></div><div class="pray" id="giftPray"></div></div>
+  <div id="yt-card" class="card ui">
+    <div class="yt-header">
+      <span class="yt-title">🎵 Chú Đại Bi</span>
+      <span id="yt-status" class="yt-badge loading">Đang tải…</span>
+    </div>
+    <div class="yt-player-box">
+      <div id="yt-player"></div>
+    </div>
+    <div class="yt-controls">
+      <button id="yt-btn-toggle" class="yt-btn" title="Bật/Tắt">⏸ Tạm dừng</button>
+      <div class="yt-vol-wrap">
+        <span class="yt-vol-icon">🔊</span>
+        <input type="range" id="yt-vol" min="0" max="100" value="60" class="yt-slider">
+        <span id="yt-vol-val">60%</span>
+      </div>
+    </div>
+  </div>
   <button id="unmute">🔔 Bấm để bật âm thanh</button>
   <div id="conn">đang kết nối…</div>
 </div></div>
@@ -221,22 +256,150 @@ let chantHide=null;
 function showChant(text){ document.getElementById('chantText').textContent=text; const el=document.getElementById('chant'); el.classList.add('show'); clearTimeout(chantHide); chantHide=setTimeout(()=>el.classList.remove('show'), 14000); }
 
 /* ======================= audio ======================= */
+
+/* ======================= YouTube Music Player ======================= */
+const YT_VIDEO_ID = 'YX1brbZAH_8';
+let ytPlayer = null, ytReady = false;
+let ytUserVol = parseInt(localStorage.getItem('cd_yt_vol') || '60', 10);
+let ytWantedPlay = localStorage.getItem('cd_yt_play') !== '0';
+let ytDucked = false;
+
+function initYTPlayer() {
+  if (typeof YT === 'undefined' || !YT.Player || ytPlayer) return;
+  ytPlayer = new YT.Player('yt-player', {
+    width: '100%',
+    height: '100%',
+    videoId: YT_VIDEO_ID,
+    playerVars: {
+      autoplay: 1,
+      controls: 0,
+      disablekb: 1,
+      enablejsapi: 1,
+      fs: 0,
+      loop: 1,
+      playlist: YT_VIDEO_ID,
+      modestbranding: 1,
+      rel: 0,
+      playsinline: 1,
+      origin: window.location.origin
+    },
+    events: {
+      onReady: onYTPlayerReady,
+      onStateChange: onYTPlayerStateChange,
+      onError: onYTPlayerError
+    }
+  });
+}
+window.onYouTubeIframeAPIReady = initYTPlayer;
+if (window.YT && window.YT.Player) initYTPlayer();
+
+function onYTPlayerReady() {
+  ytReady = true;
+  ytSetVolume(ytUserVol);
+  const statusEl = document.getElementById('yt-status');
+  if (statusEl) { statusEl.textContent = 'Sẵn sàng'; statusEl.className = 'yt-badge'; }
+  // Try playing
+  try {
+    ytPlayer.playVideo();
+  } catch(e) {}
+  // If sound already enabled on page, unmute immediately
+  if (AC && AC.state === 'running') {
+    ytUnmuteAndPlay();
+  }
+}
+
+function onYTPlayerStateChange(e) {
+  const statusEl = document.getElementById('yt-status');
+  const btn = document.getElementById('yt-btn-toggle');
+  if (e.data === 1) { // PLAYING
+    if (statusEl) { statusEl.textContent = 'Đang phát'; statusEl.className = 'yt-badge'; }
+    if (btn) btn.textContent = '⏸ Tạm dừng';
+  } else if (e.data === 2) { // PAUSED
+    if (statusEl) { statusEl.textContent = 'Tạm dừng'; statusEl.className = 'yt-badge paused'; }
+    if (btn) btn.textContent = '▶ Tiếp tục phát';
+  } else if (e.data === 0) { // ENDED -> loop
+    if (ytPlayer && ytReady) ytPlayer.playVideo();
+  }
+}
+
+function onYTPlayerError(e) {
+  const statusEl = document.getElementById('yt-status');
+  if (statusEl) { statusEl.textContent = 'Lỗi phát'; statusEl.className = 'yt-badge paused'; }
+}
+
+function ytUnmuteAndPlay() {
+  if (!ytPlayer || !ytReady) return;
+  try {
+    ytPlayer.unMute();
+    ytSetVolume(ytUserVol);
+    ytPlayer.playVideo();
+  } catch(e) {}
+}
+
+function ytToggle() {
+  if (!ytPlayer || !ytReady) return;
+  const state = ytPlayer.getPlayerState();
+  if (state === 1) ytPause();
+  else ytPlay();
+}
+
+function ytPlay() {
+  if (!ytPlayer || !ytReady) return;
+  ytUnmuteAndPlay();
+  localStorage.setItem('cd_yt_play', '1');
+}
+
+function ytPause() {
+  if (!ytPlayer || !ytReady) return;
+  ytPlayer.pauseVideo();
+  localStorage.setItem('cd_yt_play', '0');
+}
+
+function ytSetVolume(vol) {
+  ytUserVol = Math.max(0, Math.min(100, Math.round(vol)));
+  localStorage.setItem('cd_yt_vol', String(ytUserVol));
+  const slider = document.getElementById('yt-vol');
+  const valText = document.getElementById('yt-vol-val');
+  if (slider) slider.value = ytUserVol;
+  if (valText) valText.textContent = ytUserVol + '%';
+  if (ytPlayer && ytReady && !ytDucked) {
+    try { ytPlayer.setVolume(ytUserVol); } catch(e) {}
+  }
+}
+
+// UI events
+const btnYt = document.getElementById('yt-btn-toggle');
+if (btnYt) btnYt.onclick = ytToggle;
+const sliderYt = document.getElementById('yt-vol');
+if (sliderYt) {
+  sliderYt.value = ytUserVol;
+  sliderYt.oninput = e => ytSetVolume(+e.target.value);
+}
+const valTextYt = document.getElementById('yt-vol-val');
+if (valTextYt) valTextYt.textContent = ytUserVol + '%';
+
 let AC=null, master=null, musicGain=null, sfx=null, settings={ music:true, mo:true, moBpm:52 };
 const TRACKS=['/assets/music/music1.mp3','/assets/music/music2.mp3']; let trackIdx=Math.floor(Math.random()*TRACKS.length), musicEl=null;
-document.getElementById('unmute').onclick = e => { e.currentTarget.remove(); startAudio(); };
+document.getElementById('unmute').onclick = e => { e.currentTarget.remove(); startAudio(); ytUnmuteAndPlay(); };
 function startAudio(){
   AC = new (window.AudioContext||window.webkitAudioContext)();
   master = AC.createGain(); master.gain.value=.9; master.connect(AC.destination);
   musicGain = AC.createGain(); musicGain.gain.value=settings.music?.5:0; musicGain.connect(master);
   sfx = AC.createGain(); sfx.gain.value=1; sfx.connect(master);
-  nextTrack(); scheduleMo(); bell(); playTTS();
+  scheduleMo(); bell(); playTTS();
 }
 function nextTrack(){
   if (musicEl){ musicEl.pause(); }
   musicEl = new Audio(TRACKS[trackIdx++ % TRACKS.length]); const src=AC.createMediaElementSource(musicEl); src.connect(musicGain);
   musicEl.onended = nextTrack; musicEl.play().catch(()=>{});
 }
-function duck(on){ if(!musicGain) return; const t=AC.currentTime, target = !settings.music ? 0 : on ? .14 : .5; musicGain.gain.cancelScheduledValues(t); musicGain.gain.setValueAtTime(musicGain.gain.value,t); musicGain.gain.linearRampToValueAtTime(target,t+.5); }
+function duck(on){
+  if(musicGain) { const t=AC.currentTime, target = !settings.music ? 0 : on ? .14 : .5; musicGain.gain.cancelScheduledValues(t); musicGain.gain.setValueAtTime(musicGain.gain.value,t); musicGain.gain.linearRampToValueAtTime(target,t+.5); }
+  if(ytPlayer && ytReady) {
+    if(on) { ytDucked = true; try { ytPlayer.setVolume(Math.round(ytUserVol * 0.2)); } catch(e){} }
+    else { ytDucked = false; try { ytPlayer.setVolume(ytUserVol); } catch(e){} }
+  }
+}
 let moHit=0, bellHit=0;      // moments the wooden fish and the bell were struck: the monks' arms follow the sound
 function bell(big){
   bellHit=1;
@@ -434,6 +597,7 @@ function connect(){
       case 'like': { const v=visitors.get(m.id); if(v) hearts(v,m.n); } break;
       case 'tts': if (AC || m.tag==='gift') queueTTS(m.url); break;     // before sound is on, gift lines wait; announcements are not worth reading late
       case 'chant': showChant(m.text); bell(); break;
+      case 'yt': if (m.action==='toggle') ytToggle(); else if (m.action==='play') ytPlay(); else if (m.action==='pause') ytPause(); else if (m.action==='volume') ytSetVolume(m.volume); break;
       case 'bell': bell(true); break;
       case 'mo1': mo(); break;
     }
@@ -886,7 +1050,7 @@ layout(24); requestAnimationFrame(tick);
 if (new URLSearchParams(location.search).has('auto')){
   document.getElementById('unmute').remove();
   const probe=new (window.AudioContext||window.webkitAudioContext)();
-  const tryStart=setInterval(()=>{ probe.resume(); if (probe.state==='running'){ clearInterval(tryStart); probe.close(); startAudio(); } },1000);
+  const tryStart=setInterval(()=>{ probe.resume(); if (probe.state==='running'){ clearInterval(tryStart); probe.close(); startAudio(); ytUnmuteAndPlay(); } },1000);
 }
 </script>
 </body>

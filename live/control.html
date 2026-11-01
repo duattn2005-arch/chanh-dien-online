@@ -132,9 +132,14 @@ button.red{background:var(--red);border-color:#b84a33}
     <textarea id="sayText">Nam mô Bổn Sư Thích Ca Mâu Ni Phật. Nguyện cầu cho tất cả chư vị Phật tử thân tâm thường an lạc, vạn sự cát tường.</textarea>
     <div class="row"><button class="primary" id="btnSay">Phát lên live</button><button id="btnChant">Đọc kinh định kỳ ngay</button></div>
     <div class="row tight">
-      <label class="check"><input type="checkbox" id="music" checked> Nhạc nền</label>
+      <label class="check"><input type="checkbox" id="music" checked> Nhạc nền MP3</label>
       <label class="check"><input type="checkbox" id="mo" checked> Tiếng mõ</label>
       <label class="check"><input type="checkbox" id="autoChant" checked> Đọc kinh tự động</label>
+    </div>
+    <div class="row tight" style="margin-top:10px;padding:10px;background:#241208;border-radius:10px;border:1px solid #4a2816;align-items:center;gap:12px">
+      <strong style="color:var(--gold2);font-size:14px">🎵 Nhạc YouTube (Chú Đại Bi):</strong>
+      <button id="btnYtToggle" type="button" style="padding:4px 12px;font-size:13px">⏸ Tạm dừng / Phát</button>
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px">Âm lượng: <input id="ytVol" type="range" min="0" max="100" value="60" style="width:100px;vertical-align:middle"><span id="ytVolText">60%</span></label>
     </div>
     <div class="row">
       <label>Nhịp mõ (BPM)<input id="moBpm" type="number" min="20" max="120" value="52"></label>
@@ -217,6 +222,11 @@ $('btnChant').onclick = () => send('chant');
 $('btnBell').onclick = () => send('bell');
 $('btnMo').onclick = () => send('mo');
 for (const k of SETTING_IDS) $(k).addEventListener('change', () => send('settings', { settings: readSettings() }));
+$('btnYtToggle').onclick = () => send('yt', { action: 'toggle' });
+$('ytVol').oninput = e => {
+  $('ytVolText').textContent = e.target.value + '%';
+  send('yt', { action: 'volume', volume: +e.target.value });
+};
 </script>
 </body>
 </html>

@@ -256,6 +256,7 @@ function onControl(m){
       applySettings(m.settings || {});
       scheduleChant(); broadcast({ t:'settings', settings, cap: capacity(), offers: OFFERINGS }); saveSettings(); break;
     case 'bots': setBots(!!m.on, +m.n || 12, m.pace); break;
+    case 'yt': broadcast({ t:'yt', action: m.action, volume: m.volume }); break;
   }
 }
 
@@ -341,7 +342,7 @@ const server = http.createServer((req, res) => {
   fs.stat(file, (err, st) => {
     if (err || !st.isFile()) { res.writeHead(404).end('not found'); return; }
     res.writeHead(200, { 'Content-Type': MIME[path.extname(file).toLowerCase()] || 'application/octet-stream',
-      'Cache-Control': p.startsWith('/live/tts/') ? 'no-store' : 'no-cache', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer' });
+      'Cache-Control': p.startsWith('/live/tts/') ? 'no-store' : 'no-cache', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'strict-origin-when-cross-origin' });
     if (req.method === 'HEAD') { res.end(); return; }
     fs.createReadStream(file).pipe(res);
   });

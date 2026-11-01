@@ -6,3 +6,5 @@ live/tts/
 .DS_Store
 Thumbs.db
 live/settings.local.json
+live/logs/
+*.pid
