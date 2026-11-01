@@ -21,7 +21,7 @@ npm start
 
 1. Mở `http://localhost:3000/live/control.html` (bảng điều khiển).
 2. Chạy `live/mo-overlay.bat` để mở overlay cho live: cửa sổ lớn nhất màn hình cho phép, đúng tỉ lệ 9:16, không bị giảm tốc khi bị che, tự có tiếng. Nút **Mở màn hình overlay 9:16** chỉ để xem thử (phải bấm **Bật âm thanh** một lần).
-3. Trong TikTok LIVE Studio: *Add source → Window capture* → chọn cửa sổ overlay, kéo cho đầy khung, cắt bỏ thanh tiêu đề nếu thấy. Với OBS thì dùng *Browser source* trỏ tới `http://localhost:3000/live/overlay.html`, kích thước 1080×1920.
+3. Trong TikTok LIVE Studio, ưu tiên nguồn **Link** trỏ tới `http://localhost:3000/live/overlay.html`, kích thước 1080×1920: trang được vẽ đúng Full HD nên nét nhất. *Window capture* cũng dùng được nhưng mờ hơn, vì Windows không cho cửa sổ cao hơn màn hình: trên màn 1920×1080 ảnh chỉ còn khoảng 598×1063 rồi bị phóng to 1,8 lần. Khi dùng cách này: *Add source → Window capture* → chọn cửa sổ overlay, kéo cho đầy khung, cắt bỏ thanh tiêu đề nếu thấy. Với OBS thì dùng *Browser source* trỏ tới `http://localhost:3000/live/overlay.html`, kích thước 1080×1920.
 4. Bật LIVE trên TikTok, nhập `@username` vào bảng điều khiển, bấm **Kết nối**.
 
 Chưa live vẫn thử được: dùng **Thử tương tác**, **Đổ người mẫu 15/36/64/100** hoặc **Bot mô phỏng**.

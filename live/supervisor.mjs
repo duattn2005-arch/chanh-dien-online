@@ -56,6 +56,7 @@ process.on('exit', () => {
 let child = null;
 let restartHistory = [];
 let isShuttingDown = false;
+let foreignServer = false;
 
 function checkHealth() {
   return new Promise((resolve) => {
@@ -71,8 +72,17 @@ function checkHealth() {
   });
 }
 
-function startServer() {
+async function startServer() {
   if (isShuttingDown) return;
+
+  // Port already served by a healthy server: starting another would only die on EADDRINUSE. Check again later.
+  if (await checkHealth()) {
+    if (!foreignServer) log(`[SUPERVISOR] Port ${PORT} is already served by another process. Waiting.`);
+    foreignServer = true;
+    setTimeout(startServer, 15000);
+    return;
+  }
+  foreignServer = false;
 
   const now = Date.now();
   restartHistory = restartHistory.filter((t) => now - t < 60000);

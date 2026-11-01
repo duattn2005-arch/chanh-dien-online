@@ -14,35 +14,32 @@
   --display:"Noto Serif",Georgia,serif; --body:"Be Vietnam Pro",system-ui,sans-serif;
   color-scheme:dark;
 }
-html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:var(--body);color:var(--fg);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
+html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:var(--body);color:var(--fg);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:geometricPrecision}
 #fit{position:fixed;inset:0;overflow:hidden}
-#stage{position:absolute;left:50%;top:50%;width:1080px;height:1920px;transform-origin:center center;overflow:hidden;background:var(--bg)}
+#stage{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-origin:0 0;overflow:hidden;background:var(--bg)}
 #c{position:absolute;inset:0;width:1080px;height:1920px}
 .ui{position:absolute;z-index:3}
 /* participant name tags layer & speech bubbles layer */
 #tags-layer{position:absolute;inset:0;pointer-events:none;z-index:2;overflow:visible}
 #bubbles-layer{position:absolute;inset:0;pointer-events:none;z-index:4;overflow:visible}
 .name-tag{
-  position:absolute;left:0;top:0;display:inline-flex;align-items:center;gap:4px;
-  padding:2px 8px;border-radius:12px;
-  background:linear-gradient(180deg,rgba(26,10,4,.96),rgba(12,4,2,.96));
-  border:1.2px solid rgba(226,176,79,.85);
-  box-shadow:0 3px 10px rgba(0,0,0,.85);
-  white-space:nowrap;transform:translate(-50%,-50%);will-change:transform;pointer-events:none;
+  position:absolute;left:0;top:0;display:flex;align-items:center;box-sizing:border-box;
+  padding:0 6px;border-radius:10px;
+  background:rgba(20,8,3,.96);
+  border:1px solid rgba(226,176,79,.9);
+  white-space:nowrap;pointer-events:none;
 }
 .name-tag::before{
-  content:"❁";font-size:12px;color:var(--gold2);margin-right:2px;
+  content:"❁";font-size:10px;line-height:1;color:var(--gold2);margin-right:3px;flex:none;
 }
 .name-tag.gold{
-  background:linear-gradient(180deg,rgba(78,32,10,.97),rgba(38,14,4,.97));
-  border:1.5px solid #e2b04f;
-  box-shadow:0 3px 12px rgba(226,176,79,.35);
+  background:rgba(70,28,8,.98);
+  border:1px solid #ffd98a;
 }
 .tag-av{display:none}
 .tag-name{
-  font-family:var(--body);font-weight:600;font-size:13px;line-height:1.2;color:#fff4dc;
-  letter-spacing:.02em;text-shadow:0 1px 2px #000;max-width:110px;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-family:var(--body);font-weight:600;line-height:1;color:#fff4dc;
+  min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
 .name-tag.gold .tag-name{color:#ffd98a;font-weight:700}
 
@@ -183,14 +180,14 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:var(-
 /* ======================= stage fit ======================= */
 const stage = document.getElementById('stage');
 let stageScale=1, onFit=null;
-function fit(){ const s = Math.min(innerWidth/1080, innerHeight/1920); stageScale=s; stage.style.transform = `translate(-50%,-50%) scale(${s})`; onFit?.(); }
+function fit(){ const s = Math.min(innerWidth/1080, innerHeight/1920); stageScale=s; stage.style.transform = `translate(${Math.round((innerWidth-1080*s)/2)}px,${Math.round((innerHeight-1920*s)/2)}px) scale(${s})`; onFit?.(); }
 addEventListener('resize', fit); fit();
 
 /* ======================= assets ======================= */
 const A = {};
 const IMG = { hall:'/assets/hall.jpg', monk:'/assets/c_monk.png', abbot:'/assets/c_abbot.png', nun:'/assets/c_nun.png', granny:'/assets/c_granny.png', man:'/assets/c_man.png',
   woman:'/assets/c_woman.png', child:'/assets/c_child.png', anim_man:'/assets/anim_man.png', anim_woman:'/assets/anim_woman.png', anim_granny:'/assets/anim_granny.png',
-  petal:'/assets/fx_petal.png', monk_arm:'/assets/monk_arm.png',
+  petal:'/assets/fx_petal.png', monk_arm:'/assets/monk_arm.png', fx_mo:'/assets/fx_mo.png', fx_bell:'/assets/fx_bell.png',
   offer_huong:'/assets/offer_huong.png', offer_sen:'/assets/offer_sen.png', offer_nguqua:'/assets/offer_nguqua.png', offer_xoi:'/assets/offer_xoi.png', offer_nen:'/assets/offer_nen.png', offer_banh:'/assets/offer_banh.png',
   pose_man_kneel:'/assets/pose_man_kneel.png', pose_man_k1:'/assets/pose_man_k1.png', pose_man_k2:'/assets/pose_man_k2.png', pose_man_bow:'/assets/pose_man_bow.png',
   pose_woman_kneel:'/assets/pose_woman_kneel.png', pose_woman_k1:'/assets/pose_woman_k1.png', pose_woman_k2:'/assets/pose_woman_k2.png', pose_woman_bow:'/assets/pose_woman_bow.png',
@@ -202,9 +199,11 @@ const avatars = new Map();
 function avatar(url){ if(!url) return null; let im=avatars.get(url); if(!im){ im=new Image(); im.referrerPolicy='no-referrer'; im.src=url; avatars.set(url,im); } return im.naturalWidth?im:null; }
 
 /* ======================= seats: Chia Đều Hai Bên Chánh Điện ======================= */
-const FLOOR_Y_TOP = 1140;
-const FLOOR_Y_BOT = 1810;
+const FLOOR_Y_TOP = 1042;
+const FLOOR_Y_BOT = 1840;
 const FLOOR = { yTop: FLOOR_Y_TOP, yBot: FLOOR_Y_BOT };
+const SEAT_TOP = 1124, SEAT_BOT = 1806, TAG_DROP = 5;     // first and last row of cushions; a name tag starts this far above the cushion's base
+const tagFont = t => Math.round(15 + 2 * t), tagHeight = fs => fs + 5;
 let cap = 60, seats = [];
 const visitors = new Map();  // id -> visitor
 let order = [];               // ids in seating order
@@ -212,69 +211,33 @@ let tagLayoutDirty = true;
 window.visitors = visitors;
 window.order = order;
 
+// columns per side: 60 people is 30 a side, 3 columns of 10 rows
+const colsFor = n => n <= 4 ? 1 : n <= 10 ? 2 : n <= 30 ? 3 : n <= 40 ? 4 : 5;
+function seatSide(ids, dir){
+  if (!ids.length) return;
+  const cols = colsFor(ids.length), rows = Math.ceil(ids.length / cols);
+  // rows come closer together with distance, in the same ratio as the floor
+  const span = SEAT_BOT - SEAT_TOP, gaps = [];
+  let p0 = rows > 1 ? span / ((rows - 1) * 1.3) : 0, stretch = Math.min(1, 150 / (p0 * 1.6 || 150));
+  for (let i = 0; i < rows - 1; i++) gaps.push(p0 * stretch * (1 + .6 * (rows > 2 ? i / (rows - 2) : 0)));
+  let y = rows > 1 ? SEAT_TOP + (span - gaps.reduce((a, b) => a + b, 0)) / 2 : SEAT_TOP + span * .45;
+  const ys = [y]; for (const g of gaps) ys.push(y += g);
+  ids.forEach((id, i) => {
+    const v = visitors.get(id); if (!v) return;
+    const r = Math.floor(i / cols), c = i % cols, yy = ys[r], t = (yy - SEAT_TOP) / span;
+    const inner = 170 + 40 * t, outer = Math.min(490, 425 + 100 * t), colGap = cols > 1 ? (outer - inner) / (cols - 1) : 200;
+    const x = 540 + dir * (cols > 1 ? inner + colGap * c : (inner + outer) / 2);
+    const fs = tagFont(t), behind = r > 0 ? gaps[r - 1] : (gaps[0] ?? 150);
+    // a head must end above the name tag of the person behind, or the tag would lie on it
+    const h = Math.min(behind - tagHeight(fs) + TAG_DROP - 1, colGap * 1.12, 140);
+    v.seat = { x, y: yy, scale: Math.max(.1, h / 273), side: dir < 0 ? 'left' : 'right', r, c, rows, cols, gap: behind, fs, tagW: colGap >= 100 ? Math.round(colGap - 29) : 96 };
+    v.flip = dir > 0;
+  });
+}
 function reseat(){
   order = order.filter(id => visitors.has(id));
-  const total = order.length;
-  if (total === 0) return;
-
-  const nL = Math.ceil(total / 2);
-  const nR = Math.floor(total / 2);
-
-  // Dynamic columns per side:
-  // <= 6 -> 1 col, <= 15 -> 2 cols, <= 36 -> 3 cols (60 people = 30 per side = 3 cols x 10 rows), <= 55 -> 4 cols, > 55 -> 5 cols
-  const colsPerSide = nL <= 6 ? 1 : nL <= 15 ? 2 : nL <= 36 ? 3 : nL <= 55 ? 4 : 5;
-  const rowsL = Math.max(1, Math.ceil(nL / colsPerSide));
-  const rowsR = Math.max(1, Math.ceil(nR / colsPerSide));
-
-  const leftIds = order.filter((_, idx) => idx % 2 === 0);
-  const rightIds = order.filter((_, idx) => idx % 2 === 1);
-
-  // Left block: grouped strictly on left side, aisle 100% open
-  leftIds.forEach((id, i) => {
-    const v = visitors.get(id);
-    if (!v) return;
-    const r = Math.floor(i / colsPerSide);
-    const c = i % colsPerSide;
-    const t = rowsL <= 1 ? 0.5 : r / (rowsL - 1);
-    const y = FLOOR_Y_TOP + (FLOOR_Y_BOT - FLOOR_Y_TOP) * t;
-
-    // Left columns: outer (c=0) to inner (c=colsPerSide-1)
-    const outerX = 90 + 15 * t;
-    const innerX = 310;
-    const u = colsPerSide <= 1 ? 0.5 : c / (colsPerSide - 1);
-    const x = outerX + (innerX - outerX) * u;
-
-    const baseScale = colsPerSide >= 4 ? 0.26 : colsPerSide === 3 ? 0.30 : 0.36;
-    const scale = (baseScale + 0.11 * t);
-
-    v.seat = { x, y, scale, side: 'left', r, c, rows: rowsL, cols: colsPerSide };
-    v.flip = false; // Left faces center (right)
-    if (v.state === 'sit') { v.x = v.tx = x; v.y = v.ty = y; }
-  });
-
-  // Right block: grouped strictly on right side, aisle 100% open
-  rightIds.forEach((id, i) => {
-    const v = visitors.get(id);
-    if (!v) return;
-    const r = Math.floor(i / colsPerSide);
-    const c = i % colsPerSide;
-    const t = rowsR <= 1 ? 0.5 : r / (rowsR - 1);
-    const y = FLOOR_Y_TOP + (FLOOR_Y_BOT - FLOOR_Y_TOP) * t;
-
-    // Right columns: inner (c=0) to outer (c=colsPerSide-1)
-    const innerX = 770;
-    const outerX = 990 - 15 * t;
-    const u = colsPerSide <= 1 ? 0.5 : c / (colsPerSide - 1);
-    const x = innerX + (outerX - innerX) * u;
-
-    const baseScale = colsPerSide >= 4 ? 0.26 : colsPerSide === 3 ? 0.30 : 0.36;
-    const scale = (baseScale + 0.11 * t);
-
-    v.seat = { x, y, scale, side: 'right', r, c, rows: rowsR, cols: colsPerSide };
-    v.flip = true; // Right faces center (left)
-    if (v.state === 'sit') { v.x = v.tx = x; v.y = v.ty = y; }
-  });
-
+  seatSide(order.filter((_, i) => i % 2 === 0), -1);
+  seatSide(order.filter((_, i) => i % 2 === 1), 1);
   tagLayoutDirty = true;
 }
 
@@ -285,13 +248,13 @@ function layout(c){
 document.getElementById('count').textContent = '0/60';
 
 const TEACHERS = [
-  { skin: 'monk', x: 205, y: 1015, s: .44 },
-  { skin: 'monk', x: 875, y: 1015, s: .44, flip: true }
-];      // on the floor, in front of the altar
+  { skin: 'monk', x: 268, y: 956, s: .46 },
+  { skin: 'monk', x: 812, y: 956, s: .46, flip: true }
+];      // beside the altar, behind the offering table
 
 window.addVisitor = addVisitor;
 function addVisitor(p, instant){
-  if (visitors.has(p.id)) { Object.assign(visitors.get(p.id), { name:p.name, skin:p.skin, avatar:p.avatar, coins:p.coins }); return; }
+  if (visitors.has(p.id)) { Object.assign(visitors.get(p.id), { name:p.name, skin:p.skin, avatar:p.avatar, coins:p.coins }); tagLayoutDirty=true; return; }
   const v = { ...p, state:'walk', x:540, y:2020, tx:0, ty:0, frame:0, ft:0, sitT:0, flip:false, fade:0, bubble:null, glow:0, bow:0, phase:Math.random()*6.28 };
   visitors.set(p.id, v); order.push(p.id); reseat();
   // whoever comments simply appears on their cushion: only givers walk, or a busy room turns into a crowd crossing the screen
@@ -518,38 +481,26 @@ function giftFx(v, tier){ if (tier>=3) bell(true); }     // nothing flies about:
 /* a gift is a small rite: the giver stands up, carries the offering to the altar, sets it down (incense goes into the censer),
    bows three times in the exact centre, just below the abbot, then backs away to their seat without turning their back on the Buddha.
    One person at a time: everyone else lines up along the middle aisle with their offering in hand. */
-const OFFER_W={huong:70,sen:56,nen:34,nguqua:50,banh:54,xoi:56};
+const OFFER_BOX=40;     // every offering fits this box on the table, so no two ever touch
 const OFFER_PARTS={lequa:['nguqua','sen'],lexoi:['xoi','nguqua'],lechay:['nguqua','xoi','banh'],daile:['nguqua','xoi','banh','sen']};     // the larger offerings are several dishes, all vegetarian
-// Expanded 28-spot collision-free Altar Table (Left & Right Wings + Overflow Side Trays)
-// Spaced collision-free spots on left and right wings of the altar table
-const ALTAR_SPOTS = [
-  // Left Wing (Tier 1 front, Tier 2 mid, Tier 3 back)
-  [270, 990], [330, 990], [390, 990], [450, 990],
-  [250, 1018], [310, 1018], [370, 1018], [430, 1018],
-  [230, 1046], [290, 1046], [350, 1046], [410, 1046],
-  // Right Wing (Tier 1 front, Tier 2 mid, Tier 3 back)
-  [630, 990], [690, 990], [750, 990], [810, 990],
-  [650, 1018], [710, 1018], [770, 1018], [830, 1018],
-  [670, 1046], [730, 1046], [790, 1046], [850, 1046],
-  // Side shelves
-  [180, 1015], [180, 1050], [900, 1015], [900, 1050]
-];
-const CENSER = [540, 962], OFFER_STAY = 240; // 4 minutes stay
-function getFreeAltarSpot() {
-  for (let i = 0; i < ALTAR_SPOTS.length; i++) {
-    if (!altar[i]) return i;
+// The offering table stands empty in two wings, leaving the way to the censer open. Spots fill from the aisle outwards, front row first.
+const TABLE={top:960,front:1035,bottom:1068,in:40,out:412,backOut:390}, ALTAR_SPOTS=[];
+for (const y of [1031,989]) for (let i=0;i<8;i++) for (const d of [-1,1]) ALTAR_SPOTS.push([540+d*(72+i*44),y]);
+const CENSER = [540, 802], OFFER_STAY = 240;
+const altar=new Array(ALTAR_SPOTS.length).fill(null), fadingOffers=[], placing=[], sticks=[]; let nextStick=0, smokeBoost=0;
+function getFreeAltarSpot(id, key){
+  let i=altar.indexOf(null);
+  if (i<0){      // table full: the oldest offering fades out to free its place
+    let oldest=Infinity; altar.forEach((o,n)=>{ if (!o.reserved && o.at<oldest){ oldest=o.at; i=n; } });
+    if (i<0) return -1;
+    fadingOffers.push({key:altar[i].key,spot:i,left:1});
   }
-  let oldestIdx = 0, oldestTime = Infinity;
-  for (let i = 0; i < altar.length; i++) {
-    if (altar[i] && altar[i].at < oldestTime) {
-      oldestTime = altar[i].at; oldestIdx = i;
-    }
-  }
-  return oldestIdx;
+  altar[i]={key,id,reserved:true};
+  return i;
 }
-const altar=new Array(ALTAR_SPOTS.length).fill(null), placing=[], sticks=[]; let nextSpot=0, nextStick=0, smokeBoost=0;
-const LANES=[[540,1420]], LANE_SCALE=.58, LANE_APPROACH=1420, ALTAR_Y=1000, ALTAR_SCALE=.52, QUEUE_Y=1660, QUEUE_GAP=140, QUEUE_SCALE=.34, MAX_LINE=3, SIDE_LANE=160, laneBusy=[null], riteQueue=[];     // as large as the teachers, so the bowing reads on a phone
-const STICK_X=[0,-14,14,-26,26,-7,7,-20,20,-32,32,-3], STICK_BASE=[537,958], STICK_LIFE=180;
+const walkScale=y=>.38+.14*Math.max(0,Math.min(1,(y-FLOOR_Y_TOP)/(FLOOR_Y_BOT-FLOOR_Y_TOP)));
+const MAT_Y=1240, LANES=[[540,MAT_Y]], LANE_APPROACH=MAT_Y, ALTAR_Y=1036, CORRIDOR_Y=1094, QUEUE_Y=1410, QUEUE_GAP=130, MAX_LINE=3, SIDE_LANE=92, laneBusy=[null], riteQueue=[];
+const STICK_X=[0,-14,14,-26,26,-7,7,-20,20,-32,32,-3], STICK_BASE=[537,798], STICK_LIFE=180;
 // Only man, woman and granny have walking frames: the other outfits borrow one for the rite, recoloured to match.
 const RITE_BODY={monk:'man',master:'man',child:'man',nun:'woman',granny:'woman'}, RITE_TONE={monk:'rgba(140,72,22,.62)',master:'rgba(160,84,18,.62)',nun:'rgba(120,84,50,.55)',granny:'rgba(110,62,28,.5)'}, riteStrips={};
 const POSE_H={kneel:285,k1:285,k2:285,bow:118}, poseCache=new Map();     // height of each posture, for a scale of 1
@@ -572,14 +523,16 @@ function poseSprite(body,skin,name,ws){
 // The drawing to show at this moment of the rite. Nothing is stretched or faded: going down and coming up are a series of separate drawings, like hand animation,
 // in which the knees and hips stay put and only the body above them moves. Null means the walking frame.
 function ritePose(r){
+  if (r.stand>0) return {frame:4+Math.min(3,Math.floor(r.stand/.22))};     // getting up from the cushion
+  const holding=r.carry==='huong';     // the sticks stay in both raised hands, so the postures without raised hands are skipped
   switch (r.phase){
-    case 'kneel': return r.t<.25?{frame:5}:r.t<.5?{frame:6}:{name:'kneel'};
-    case 'bow': return {name:r.bow<.2?'kneel':r.bow<.45?'k1':r.bow<.75?'k2':'bow'};
-    case 'rise': return r.t<.25?{name:'kneel'}:r.t<.5?{frame:6}:{frame:5};
+    case 'kneel': return holding||r.t>=.5?{name:'kneel'}:r.t<.25?{frame:5}:{frame:6};
+    case 'bow': return holding?{name:r.bow<.33?'kneel':r.bow<.66?'k1':'k2'}:{name:r.bow<.2?'kneel':r.bow<.45?'k1':r.bow<.75?'k2':'bow'};
+    case 'rise': return r.t<.25?{name:'kneel'}:holding?null:r.t<.5?{frame:6}:{frame:5};
   }
   return null;
 }
-// kind: 'incense' walks with the sticks in the right hand, 'carry' with both hands raised under the offering, '' empty-handed
+// kind: 'carry' walks with both hands raised, holding the incense or under the offering; '' empty-handed
 function riteStrip(body,skin,kind){
   let im=A[`anim_${kind?kind+'_':''}${body}`]; if (!im?.complete || !im.naturalWidth) im=A['anim_'+body];
   if (!RITE_TONE[skin] || !im.complete || !im.naturalWidth) return im;
@@ -596,7 +549,7 @@ function offerFx(v, m){
   else riteQueue.push({id:m.id, items:OFFER_PARTS[m.offer]?[...OFFER_PARTS[m.offer]]:[m.offer]});
   startRites();
 }
-function makeRite(v,q,fields){ v.state='walk'; v.flip=false; v.frame=0; v.ft=0; return {t:0,items:q.items,big:q.big,sent:0,carry:q.items[0],bow:0,bows:0,back:false,handY:v.y-60,handK:.6,ws:v.rite?.ws??(v.seat?.scale||LANE_SCALE),...fields}; }
+function makeRite(v,q,fields){ const seated=v.state==='sit'&&!v.rite; v.state='walk'; v.flip=false; v.frame=0; v.ft=0; return {t:0,items:q.items,big:q.big,sent:0,carry:q.items[0],bow:0,bows:0,stoop:0,back:false,stand:seated?.66:0,handY:v.y-60,ws:v.rite?.ws??(v.seat?.scale||.4),...fields}; }
 function startRites(){
   for (let i=0;i<LANES.length;i++) if (laneBusy[i] && !visitors.has(laneBusy[i])) laneBusy[i]=null;
   for (let i=0;i<LANES.length && riteQueue.length;i++){      // the centre fills first
@@ -604,12 +557,10 @@ function startRites(){
     const n=riteQueue.findIndex(q=>{ const r=visitors.get(q.id)?.rite; return !r || r.phase==='wait'; }); if (n<0) break;
     const waiting=visitors.get(riteQueue[n].id); if (waiting && !waiting.rite && sideBusy(waiting)) break;
     const [q]=riteQueue.splice(n,1), v=visitors.get(q.id); if (!v){ i--; continue; }
-    const [x,y]=LANES[i];
-    // the offering is set down by hand: walk right up to the altar, beside the abbot, then back to the mat to bow
-    let spots=[];
-    for (const key of q.items){ if (key==='huong'){ spots.push(-1); continue; } const sp = getFreeAltarSpot(); spots.push(sp); altar[sp] = { key, at: Date.now() + 999999 }; }
-    const tx=spots[0]<0?CENSER[0]:ALTAR_SPOTS[spots[0]][0], reach=tx<540?Math.min(tx,445):Math.max(tx,635), side=spots[0]<0?445:reach;
-    v.rite=makeRite(v,q,{phase:'go',lane:i,spots,fromSeat:!v.rite,path:[...(v.rite?[]:toSideLane(v,LANE_APPROACH)),[540,LANE_APPROACH],[side,ALTAR_Y]]});
+    const incense=q.items[0]==='huong', spots=incense?q.items.map(()=>-1):q.items.map(key=>getFreeAltarSpot(q.id,key));
+    // incense: bow three times on the mat with the sticks raised, then plant them. An offering: straight to its place on the table.
+    const leg=incense?[[540,MAT_Y]]:[[540,CORRIDOR_Y],[ALTAR_SPOTS[spots[0]][0],CORRIDOR_Y]];
+    v.rite=makeRite(v,q,{phase:'go',lane:i,spots,fromSeat:!v.rite,path:[...(v.rite?[]:toSideLane(v,LANE_APPROACH)),[540,LANE_APPROACH],...leg]});
     laneBusy[i]=q.id;
   }
   // The line: at most MAX_LINE people standing, each with their own space, and one person joining at a time. Everyone else stays seated until there is room.
@@ -632,54 +583,73 @@ function sideBusy(me){
 }
 // From a seat: back between the rows, along to the walkway beside the line, then down or up it.
 function toSideLane(v,y){
-  const lane=540+(v.x<540?-1:1)*SIDE_LANE, rowY=v.y-30;
+  const lane=540+(v.x<540?-1:1)*SIDE_LANE, rowY=v.y-(v.seat?.gap||60)/2;
   return [[v.x,rowY],[lane,rowY],[lane,y]];
 }
 function ritePath(v,r,dt){
-  const [px,py]=r.path[0], depth=Math.max(0,Math.min(1.5,(v.y-FLOOR.yTop)/(FLOOR.yBot-FLOOR.yTop))), sp=(120+130*depth)*dt*(r.rev?.8:1), dx=px-v.x, dy=py-v.y, d=Math.hypot(dx,dy);
+  const [px,py]=r.path[0], depth=Math.max(0,Math.min(1.5,(v.y-FLOOR.yTop)/(FLOOR.yBot-FLOOR.yTop))), sp=(120+130*depth)*dt*(r.rev?.8:1), dx=px-v.x, dy=py-v.y, d=Math.hypot(dx,dy), moved=Math.min(d,sp);
   if (d<=sp){ v.x=px; v.y=py; r.path.shift(); } else { v.x+=dx/d*sp; v.y+=dy/d*sp; }
-  v.flip=r.carry!=='huong' && Math.abs(dx)>Math.abs(dy) && (dx<0)!==!!r.rev;      // the incense stays in the right hand
-  v.ft+=dt; if (v.ft>.22){ v.ft=0; v.frame=(v.frame+(r.rev?3:1))%4; }     // the step runs in reverse when backing away
+  v.flip=Math.abs(dx)>Math.abs(dy) && (dx<0)!==!!r.rev;
+  // frames follow the distance covered, so the feet never slide over the floor
+  v.ft+=moved; if (v.ft>97*r.ws){ v.ft=0; v.frame=(v.frame+(r.rev?3:1))%4; }     // the step runs in reverse when backing away
   return !r.path.length;
 }
+function goHome(v,r){
+  r.back=true; r.rev=true; r.carry=null; v.frame=0; v.ft=0; r.phase='back'; r.t=0;
+  const seat=v.seat||{x:540,y:1500,gap:60}, lane=540+(seat.x<540?-1:1)*SIDE_LANE, rowY=seat.y-seat.gap/2;
+  r.path=[[lane,LANE_APPROACH],[lane,rowY],[seat.x,rowY],[seat.x,seat.y]];     // down the walkway beside the line, then between the rows
+}
 function stepRite(v,dt,now){
-  const r=v.rite, next=p=>{ r.phase=p; r.t=0; }; r.t+=dt;
+  const r=v.rite, next=p=>{ r.phase=p; r.t=0; };
+  if (r.stand>0){ r.stand-=dt; return; }
+  r.t+=dt;
+  const incense=r.items[0]==='huong';
   switch (r.phase){
     case 'wait':
       if (r.joining){ if (ritePath(v,r,dt)){ r.joining=false; v.frame=0; v.flip=false; } }
       else if (Math.abs(v.y-r.spot)>2){ r.path=[[540,r.spot]]; ritePath(v,r,dt); }      // everyone moves up together, keeping their distance
       else { v.frame=0; v.flip=false; }
       break;
-    case 'go': if (ritePath(v,r,dt)){ v.frame=0; v.flip=false; next('raise'); } break;
-    case 'raise': if (r.t>.7) next('place'); break;
+    case 'go': if (ritePath(v,r,dt)){ v.frame=0; v.flip=false; next(incense&&!r.bows?'kneel':'raise'); } break;
+    case 'raise': if (r.t>.5) next('place'); break;
     case 'place': {
-      const gap=r.items.length>3?.25:.7;
-      if (r.sent<r.items.length && r.t>=r.sent*gap){
-        const spot=r.spots[r.sent], key=r.items[r.sent++], to=spot<0?STICK_BASE:ALTAR_SPOTS[spot];
-        placing.push({key,spot,x0:r.handX??v.x,y0:r.handY,x1:to[0],y1:to[1],k0:r.handK,t:0}); r.carry=r.items[r.sent]||null;
+      if (incense){      // both hands bring the sticks down into the censer, one after another
+        if (r.sent<r.items.length && r.t>=.3+r.sent*.25){ const key=r.items[r.sent++]; placing.push({key,spot:-1,x0:r.handX,y0:r.handY,x1:STICK_BASE[0],y1:STICK_BASE[1],t:0}); if (r.sent>=r.items.length) r.carry=null; }
+        if (r.sent>=r.items.length && r.t>=r.items.length*.25+1.1 && !sideBusy(v)) goHome(v,r);
+        break;
       }
-      if (r.sent>=r.items.length && r.t>=r.items.length*gap+.5){ r.rev=true; r.path=[LANES[r.lane]]; next('toMat'); }
+      // bend forward and set it down gently, both hands to the table
+      r.stoop=Math.sin(Math.min(1,r.t/1.1)*Math.PI);
+      if (r.sentAt===undefined && r.t>=.4){
+        const spot=r.spots[r.sent], to=ALTAR_SPOTS[spot], key=r.items[r.sent++];
+        placing.push({key,spot,x0:r.handX,y0:r.handY,x1:to[0],y1:to[1],t:0}); r.carry=null; r.sentAt=r.t;
+      }
+      if (r.t>=1.15){
+        r.stoop=0; r.sentAt=undefined;
+        if (r.sent<r.items.length){ r.carry=r.items[r.sent]; r.path=[[ALTAR_SPOTS[r.spots[r.sent]][0],CORRIDOR_Y]]; next('go'); }
+        else { r.rev=true; r.path=[[540,CORRIDOR_Y],[540,MAT_Y]]; next('toMat'); }
+      }
       break; }
     case 'toMat': if (ritePath(v,r,dt)){ v.frame=0; v.flip=false; r.rev=false; next('kneel'); } break;
-    case 'kneel': if (r.t>1) next('bow'); break;
+    case 'kneel': if (r.t>(incense?.5:1)) next('bow'); break;
     case 'bow': {
-      // one at a time means a long line can build: with six or more waiting, one quicker bow keeps it moving
-      const speed={cham:4.2,vua:3,nhanh:1.7}[settings.bowSpeed]||3, busy=riteQueue.length>=6, c=r.t/(busy?Math.min(speed,1.8):speed), n=Math.floor(c);
-      if (n>=(busy?1:settings.bows||3)){ r.bow=0; next('rise'); break; }
+      // one at a time means a long line can build: with six or more waiting, an offering gets one quicker bow; incense always gets all three
+      const speed={cham:4.2,vua:3,nhanh:1.7}[settings.bowSpeed]||3, busy=riteQueue.length>=6, c=r.t/(busy?Math.min(speed,1.8):speed), n=Math.floor(c), total=incense?3:busy?1:settings.bows||3;
+      if (n>=total){ r.bow=0; next('rise'); break; }
       if (n>=r.bows){ r.bows=n+1; mo(); }
       // go down, stay with the forehead on the floor, come back up: not a bounce
       const f=c-n, ease=x=>x*x*(3-2*x); r.bow=f<.3?ease(f/.3):f<.62?1:ease(1-(f-.62)/.38);
       break; }
     case 'rise':
       v.frame=0;
-      if (r.t>.7 && !sideBusy(v)){
-        r.back=true; r.rev=true; v.frame=0; v.ft=0; next('back');
-        const seat=v.seat||{x:540,y:1500}, lane=540+(seat.x<540?-1:1)*SIDE_LANE; r.path=[[lane,LANE_APPROACH],[lane,seat.y-30],[seat.x,seat.y-30],[seat.x,seat.y]];     // down the walkway beside the line, then between the rows
+      if (r.t>.7){
+        if (incense && r.sent===0){ r.path=[[540,ALTAR_Y]]; next('go'); }
+        else if (!sideBusy(v)) goHome(v,r);
       }
       break;
     case 'back': {
       // the next person comes up only once this one has left the space in front of the altar
-      if (laneBusy[r.lane]===v.id && v.y>LANE_APPROACH+70) laneBusy[r.lane]=null;
+      if (laneBusy[r.lane]===v.id && Math.abs(v.x-540)>=SIDE_LANE && v.y>=LANE_APPROACH) laneBusy[r.lane]=null;
       if (ritePath(v,r,dt)){
         if (laneBusy[r.lane]===v.id) laneBusy[r.lane]=null;
         v.rite=null; v.flip=false;
@@ -703,7 +673,7 @@ function connect(){
     switch(m.t){
       case 'state':
         Object.assign(settings,m.settings); applySettings(); startedAt=m.startedAt;
-        riteQueue.length=0; laneBusy.fill(null); visitors.clear(); order=[]; layout(m.cap); for (const p of m.viewers) addVisitor(p,true); updateCount(); renderMerit(); renderLadder(m.offers); break;
+        riteQueue.length=0; laneBusy.fill(null); altar.forEach((o,i)=>{ if (o?.reserved) altar[i]=null; }); visitors.clear(); order=[]; layout(m.cap); for (const p of m.viewers) addVisitor(p,true); updateCount(); renderMerit(); renderLadder(m.offers); break;
       case 'settings': Object.assign(settings,m.settings); applySettings(); renderLadder(m.offers); if (m.cap!==cap){ layout(m.cap); updateCount(); } break;
       case 'join': if (m.cap!==cap) layout(m.cap); addVisitor(m.v, m.v.demo && visitors.size>8); updateCount(); break;
       case 'leave': removeVisitor(m.id); updateCount(); renderMerit(); break;
@@ -739,18 +709,19 @@ function rr(x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,
 function rrG(g,x,y,w,h,r){ g.beginPath(); g.moveTo(x+r,y); g.arcTo(x+w,y,x+w,y+h,r); g.arcTo(x+w,y+h,x,y+h,r); g.arcTo(x,y+h,x,y,r); g.arcTo(x,y,x+w,y,r); g.closePath(); }
 
 // Dedicated Full HD 1080x1920 Backing Resolution with DevicePixelRatio adaptation (up to 2x for Retina/4K displays)
+// The backing store maps one to one onto device pixels: at 1080x1920 it is exactly Full HD, and it is never drawn small and then enlarged by the browser.
 let DPR = 1;
 function applyScale(){
-  DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-  ctx.canvas.width = Math.round(1080 * DPR);
-  ctx.canvas.height = Math.round(1920 * DPR);
+  const next = Math.min(2, stageScale * (window.devicePixelRatio || 1));
+  const w = Math.round(1080 * next), h = Math.round(1920 * next);
+  DPR = next;
+  if (ctx.canvas.width === w && ctx.canvas.height === h){ ctx.imageSmoothingQuality = 'high'; return; }
+  ctx.canvas.width = w;
+  ctx.canvas.height = h;
   ctx.canvas.style.width = '1080px';
   ctx.canvas.style.height = '1920px';
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = 'high';
-  poseCache.clear();
-  enhancedSheets.clear();
-  tagCache.clear();
 }
 
 // Full-resolution pre-enhanced sprite sheets: rendered once at original resolution, hardware filtered by GPU
@@ -779,47 +750,74 @@ const bubblesLayer = document.getElementById('bubbles-layer');
 const tagPool = new Map();
 const DEFAULT_AVATAR = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%2338180c'/%3E%3Ccircle cx='16' cy='16' r='15' fill='none' stroke='%23e2b04f' stroke-width='1.5'/%3E%3Cpath d='M16 7c-2.8 5-4.5 8-4.5 11.5a4.5 4.5 0 009 0C20.5 15 18.8 12 16 7z' fill='%23ffd98a'/%3E%3Cpath d='M11 14c-2.5 3.5-3.5 6-3.5 8a4.5 4.5 0 006.5 1.5c-1-2.5-2-6-3-9.5z' fill='%23e2b04f'/%3E%3Cpath d='M21 14c2.5 3.5 3.5 6 3.5 8a4.5 4.5 0 01-6.5 1.5c1-2.5 2-6 3-9.5z' fill='%23e2b04f'/%3E%3C/svg%3E";
 
-function updateTag(id, name, x, y, isGold, avUrl, visible, fs = 20, maxW = 140, avSize = 24){
+// A tag has a known whole-pixel width and position: text on a half pixel is what makes it blur.
+const tagMeasure = document.createElement('canvas').getContext('2d'), tagWidths = new Map();
+document.fonts?.ready.then(() => { tagWidths.clear(); tagLayoutDirty = true; });
+function tagWidth(name, fs, maxW){
+  const key = fs + '|' + name; let w = tagWidths.get(key);
+  if (w === undefined){ tagMeasure.font = `600 ${fs}px "Be Vietnam Pro",system-ui,sans-serif`; w = Math.ceil(tagMeasure.measureText(name).width); tagWidths.set(key, w); }
+  return Math.min(w, maxW) + 27;     // padding, border and the little flower
+}
+function updateTag(id, name, x, y, isGold, visible, fs, w){
   let item = tagPool.get(id);
   if (!item){
     const el = document.createElement('div');
     el.className = 'name-tag' + (isGold ? ' gold' : '');
-    const av = document.createElement('img');
-    av.className = 'tag-av';
-    av.src = avUrl || DEFAULT_AVATAR;
-    av.onerror = () => { av.src = DEFAULT_AVATAR; };
     const nameSpan = document.createElement('span');
     nameSpan.className = 'tag-name';
     nameSpan.textContent = name;
-    el.append(av, nameSpan);
+    el.append(nameSpan);
     tagsLayer.append(el);
-    item = { el, av, nameSpan, isGold, text: name, avUrl, visible: true, x: -9999, y: -9999, fs: 0, maxW: 0, avSize: 0 };
+    item = { el, nameSpan, isGold, text: name, visible: true, x: -9999, y: -9999, fs: 0, w: 0 };
     tagPool.set(id, item);
   }
   if (!visible){
     if (item.visible){ item.el.style.display = 'none'; item.visible = false; }
     return;
   }
-  if (!item.visible){ item.el.style.display = 'inline-flex'; item.visible = true; }
+  if (!item.visible){ item.el.style.display = 'flex'; item.visible = true; }
   if (item.text !== name){ item.nameSpan.textContent = name; item.text = name; }
   if (item.isGold !== isGold){
     item.el.className = 'name-tag' + (isGold ? ' gold' : '');
     item.isGold = isGold;
   }
-  if (item.fs !== fs || item.maxW !== maxW || item.avSize !== avSize){
+  if (item.fs !== fs || item.w !== w){
     item.nameSpan.style.fontSize = fs + 'px';
-    item.nameSpan.style.maxWidth = maxW + 'px';
-    item.av.style.width = avSize + 'px';
-    item.av.style.height = avSize + 'px';
-    item.fs = fs; item.maxW = maxW; item.avSize = avSize;
+    item.el.style.height = tagHeight(fs) + 'px';
+    item.el.style.width = w + 'px';
+    item.fs = fs; item.w = w;
   }
-  const nextAv = avUrl || DEFAULT_AVATAR;
-  if (item.avUrl !== nextAv){ item.av.src = nextAv; item.avUrl = nextAv; }
-  const rx = Math.round(x), ry = Math.round(y);
+  const rx = Math.round(x - w / 2), ry = Math.round(y);
   if (item.x !== rx || item.y !== ry){
-    item.el.style.transform = `translate3d(${rx}px, ${ry}px, 0) translate(-50%, -50%)`;
+    item.el.style.transform = `translate(${rx}px, ${ry}px)`;
     item.x = rx; item.y = ry;
   }
+}
+// Which names fit. Those interacting come first, then givers; a name that would touch one already placed waits, never overlaps.
+let tagShown = new Set(), tagNext = 0;
+const tagBox = v => {
+  const fs = v.seat?.fs || 15, w = tagWidth(v.name, fs, v.rite ? 124 : v.seat?.tagW || 124);
+  return { fs, w, x: Math.max(w / 2 + 3, Math.min(1077 - w / 2, v.x)), y: v.y - TAG_DROP };
+};
+const tagWalking = v => v.rite && Math.abs(v.x - 540) >= SIDE_LANE - 1;     // among the rows and along the table the name would lie on other people
+function chooseTags(list, now){
+  const rank = v => v.rite ? 0 : now < (v.spokeUntil || 0) ? 1 : v.coins > 0 ? 2 : 3;
+  const placed = []; tagShown = new Set();
+  for (const v of [...list].sort((a, b) => rank(a) - rank(b) || (b.coins || 0) - (a.coins || 0) || (a.seat?.r ?? 0) - (b.seat?.r ?? 0))){
+    if (tagWalking(v)) continue;
+    const b = tagBox(v), l = b.x - b.w / 2 - 1, r = b.x + b.w / 2 + 1, t = b.y, u = b.y + tagHeight(b.fs);
+    if (placed.some(o => l < o.r && r > o.l && t < o.u && u > o.t)) continue;
+    placed.push({ l, r, t, u }); tagShown.add(v.id);
+  }
+}
+function drawTags(list, now){
+  if (tagLayoutDirty || now >= tagNext){ chooseTags(list, now); tagNext = now + 250; tagLayoutDirty = false; }
+  for (const v of list){
+    if (!tagShown.has(v.id)){ updateTag(v.id, v.name, 0, 0, false, false); continue; }
+    const b = tagBox(v);
+    updateTag(v.id, v.name, b.x, b.y, v.coins >= 99 || v.skin === 'master', true, b.fs, b.w);
+  }
+  pruneTags(visitors);
 }
 
 function pruneTags(activeIds){
@@ -907,7 +905,54 @@ const SHAFT=makeSprite(360,1000,g=>{ const h=g.createLinearGradient(0,0,360,0); 
   g.globalCompositeOperation='destination-in'; const v=g.createLinearGradient(0,0,0,1000); v.addColorStop(0,'rgba(0,0,0,.9)'); v.addColorStop(1,'rgba(0,0,0,0)'); g.fillStyle=v; g.fillRect(0,0,360,1000); });
 const MAT=makeSprite(250,62,g=>{ const d=g.createRadialGradient(125,31,10,125,31,125); d.addColorStop(0,'#6b2f18'); d.addColorStop(.72,'#4a1d0e'); d.addColorStop(.74,'#c79a45'); d.addColorStop(.79,'#4a1d0e'); d.addColorStop(1,'rgba(40,14,6,0)'); g.save(); g.translate(125,31); g.scale(1,.248); g.translate(-125,-31); g.fillStyle=d; g.fillRect(0,-95,250,252); g.restore(); });     // the prayer mat in front of the altar
 const STICK=makeSprite(12,110,g=>{ const d=g.createLinearGradient(0,0,0,110); d.addColorStop(0,'#c98f4e'); d.addColorStop(.72,'#a8682e'); d.addColorStop(.73,'#a51f17'); d.addColorStop(1,'#7c130d'); g.fillStyle=d; g.fillRect(4.5,0,3,110); });
-const BUDDHA={cx:540,cy:610}, FLAMES=[[467,905,1],[612,905,1],[372,752,1.7],[708,752,1.7],[415,797,1.3],[665,797,1.3],[297,866,1.7],[785,866,1.7]], LANTERNS=[[15,340],[1065,340],[378,478],[706,478],[270,632],[810,632],[192,540],[885,540]];
+const HALL_RAISE=160;     // the hall sits this much higher than in hall.jpg, which leaves a longer floor for the rows
+const BUDDHA={cx:540,cy:610-HALL_RAISE}, FLAMES=[[467,905,1],[612,905,1],[372,752,1.7],[708,752,1.7],[415,797,1.3],[665,797,1.3],[297,866,1.7],[785,866,1.7]].map(([x,y,s])=>[x,y-HALL_RAISE,s]), LANTERNS=[[15,340],[1065,340],[378,478],[706,478],[270,632],[810,632],[192,540],[885,540]].map(([x,y])=>[x,y-HALL_RAISE]);
+// A one-time sharpening pass over the painted hall (unsharp mask): the JPEG is 1080 wide but soft.
+function sharpen(g,w,h,amount){
+  const img=g.getImageData(0,0,w,h), d=img.data, src=new Uint8ClampedArray(d);
+  for (let y=1;y<h-1;y++) for (let x=1;x<w-1;x++){ const i=(y*w+x)*4;
+    for (let c=0;c<3;c++){ const v=src[i+c]; d[i+c]=v+amount*(4*v-src[i+c-4]-src[i+c+4]-src[i+c-w*4]-src[i+c+w*4]); } }
+  g.putImageData(img,0,0);
+}
+// The floor is drawn rather than stretched from the photo, at full resolution, and it converges on the same vanishing point.
+function paintFloor(g){
+  const top=FLOOR_Y_TOP, vy=top-455, spread=(1920-vy)/(top-vy), seed=n=>{ const s=Math.sin(n*127.1)*43758.5453; return s-Math.floor(s); };
+  const X=(u,y)=>540+u*(y-vy)/(top-vy);     // u: offset from the middle at the top edge of the floor
+  for (let i=-12;i<12;i++){ const u0=i*62, u1=u0+62, tone=seed(i+20);
+    g.beginPath(); g.moveTo(X(u0,top),top); g.lineTo(X(u1,top),top); g.lineTo(X(u1,1920),1920); g.lineTo(X(u0,1920),1920); g.closePath();
+    const f=g.createLinearGradient(0,top,0,1920); f.addColorStop(0,`hsl(29,${44+tone*6}%,${40+tone*5}%)`); f.addColorStop(1,`hsl(30,${50+tone*6}%,${58+tone*6}%)`); g.fillStyle=f; g.fill();
+    g.save(); g.clip();
+    for (let n=0;n<26;n++){ const a=seed(i*40+n+.5), b=seed(i*40+n+.9), u=u0+a*62, y0=top+b*820, y1=y0+70+seed(n+i)*260;     // grain
+      g.strokeStyle=n%3?`rgba(90,52,20,${.05+a*.09})`:`rgba(255,224,170,${.05+a*.07})`; g.lineWidth=.6+b*.9; g.beginPath(); g.moveTo(X(u,y0),y0); g.lineTo(X(u,y1),y1); g.stroke(); }
+    g.restore();
+  }
+  g.strokeStyle='rgba(58,32,12,.9)'; for (let i=-12;i<=12;i++){ g.lineWidth=1.5; g.beginPath(); g.moveTo(X(i*62,top),top); g.lineTo(X(i*62,1920),1920); g.stroke(); }
+  const lit=g.createRadialGradient(540,top+60,20,540,top+60,620); lit.addColorStop(0,'rgba(255,214,140,.42)'); lit.addColorStop(1,'rgba(255,214,140,0)'); g.fillStyle=lit; g.fillRect(0,top,1080,1920-top);
+  const dim=g.createLinearGradient(0,top,0,top+34); dim.addColorStop(0,'rgba(30,12,4,.75)'); dim.addColorStop(1,'rgba(30,12,4,0)'); g.fillStyle=dim; g.fillRect(0,top,1080,34);
+}
+function paintWing(g,d){
+  const T=TABLE, X=v=>540+d*v;
+  g.fillStyle='rgba(20,8,3,.55)'; g.beginPath(); g.ellipse(X((T.in+T.out)/2),T.bottom+6,(T.out-T.in)/2+10,11,0,0,6.29); g.fill();
+  for (const v of [T.in+14,T.out-14,(T.in+T.out)/2]){ const l=g.createLinearGradient(0,T.front,0,T.bottom+6); l.addColorStop(0,'#5c170c'); l.addColorStop(1,'#2e0b05'); g.fillStyle=l; g.fillRect(X(v)-7,T.front,14,T.bottom+6-T.front); }
+  const a=g.createLinearGradient(0,T.front,0,T.bottom); a.addColorStop(0,'#8c2413'); a.addColorStop(1,'#5a150a'); g.fillStyle=a; g.fillRect(Math.min(X(T.in),X(T.out)),T.front,T.out-T.in,T.bottom-T.front-5);     // apron
+  g.strokeStyle='#e2b04f'; g.lineWidth=2; g.strokeRect(Math.min(X(T.in),X(T.out))+6,T.front+5,T.out-T.in-12,T.bottom-T.front-15);
+  g.strokeStyle='#e2b04f'; g.lineWidth=1.5; for (const v of [T.in+90,(T.in+T.out)/2,T.out-90]){ g.beginPath(); g.arc(X(v),T.front+14,7,0,6.29); g.stroke(); g.beginPath(); g.arc(X(v),T.front+14,3,0,6.29); g.stroke(); }
+  g.beginPath(); g.moveTo(X(T.in+4),T.top); g.lineTo(X(T.backOut),T.top); g.lineTo(X(T.out),T.front); g.lineTo(X(T.in),T.front); g.closePath();     // the top
+  const s=g.createLinearGradient(0,T.top,0,T.front); s.addColorStop(0,'#651a0d'); s.addColorStop(1,'#8e2c17'); g.fillStyle=s; g.fill();
+  g.save(); g.clip(); g.strokeStyle='rgba(40,10,4,.28)'; g.lineWidth=1; for (let y=T.top+8;y<T.front;y+=11){ g.beginPath(); g.moveTo(X(T.in-5),y); g.lineTo(X(T.out+5),y); g.stroke(); } g.restore();
+  g.strokeStyle='#ffd98a'; g.lineWidth=2.5; g.stroke();
+}
+// Everything that never changes is one picture, so a frame stamps it once.
+let backdrop=null;
+function buildBackdrop(){
+  backdrop=makeSprite(1080,1920,g=>{
+    g.imageSmoothingEnabled=true; g.imageSmoothingQuality='high';
+    g.drawImage(A.hall,0,HALL_RAISE,1080,FLOOR_Y_TOP,0,0,1080,FLOOR_Y_TOP);
+    sharpen(g,1080,FLOOR_Y_TOP,.32);
+    paintFloor(g); paintWing(g,-1); paintWing(g,1);
+  });
+}
+
 const stamp=(im,x,y,s=1)=>{ const w=im.width*s,h=im.height*s; ctx.drawImage(im,x-w/2,y-h/2,w,h); };
 function drawLights(t,dt){
   ctx.save(); ctx.globalCompositeOperation='lighter';
@@ -920,14 +965,14 @@ function drawLights(t,dt){
   for (let i=0;i<LANTERNS.length;i++){ const [x,y]=LANTERNS[i]; ctx.globalAlpha=.16+.05*Math.sin(t*(1.1+i*.17)+i); stamp(GLOW,x,y,.8); }
   // the shaft of light that always falls on the altar, its pool on the polished floor, and dust drifting slowly through it
   ctx.globalAlpha=.1; ctx.drawImage(SHAFT,360,0);
-  ctx.globalAlpha=.2; ctx.drawImage(GLOW,190,1165,700,130);
-  for (let i=0;i<20;i++){ const y=330+((i*97+t*(5+i%5))%640), x=540+Math.sin(i*12.9)*190+Math.sin(t*.22+i)*16; ctx.globalAlpha=.3*Math.sin((y-330)/640*Math.PI)*(.55+.45*Math.sin(t*.9+i*2)); stamp(FLAME,x,y,.06+.025*(i%3)); }
+  ctx.globalAlpha=.2; ctx.drawImage(GLOW,190,1165-HALL_RAISE,700,130);
+  for (let i=0;i<20;i++){ const y=170+((i*97+t*(5+i%5))%640), x=540+Math.sin(i*12.9)*190+Math.sin(t*.22+i)*16; ctx.globalAlpha=.3*Math.sin((y-170)/640*Math.PI)*(.55+.45*Math.sin(t*.9+i*2)); stamp(FLAME,x,y,.06+.025*(i%3)); }
   ctx.restore();
   // incense smoke: more of it for a few seconds after someone lights a stick
   smokeBoost=Math.max(0,smokeBoost-dt/6);
   ctx.save(); for (let i=0;i<16;i++){ const a=(t*.09+i/16)%1, sway=Math.sin(a*6+i*1.7+t*.3)*(8+a*34); ctx.globalAlpha=(.1+.14*smokeBoost)*Math.sin(Math.min(1,a*6)*1.57)*(1-a); stamp(PUFF,CENSER[0]+sway,CENSER[1]-a*(300+smokeBoost*120),.25+a*(.9+smokeBoost*.4)); } ctx.restore();
 }
-function drawOffer(key,x,y,k=1,ay=1){ const im=A['offer_'+key]; if (!im?.naturalWidth) return false; sprite(im,x,y,OFFER_W[key]/im.naturalWidth*k,ay); return true; }
+function drawOffer(key,x,y,k=1,ay=1){ const im=A['offer_'+key]; if (!im?.naturalWidth) return false; sprite(im,x,y,OFFER_BOX/Math.max(im.naturalWidth,im.naturalHeight)*k,ay); return true; }
 function ember(x,y,s,t,i){ ctx.save(); ctx.globalCompositeOperation='lighter'; ctx.globalAlpha=.75+.25*Math.sin(t*6+i); stamp(FLAME,x,y,s); ctx.restore(); }
 function drawHeld(key,x,y,k,t){
   if (key!=='huong'){ drawOffer(key,x,y,k); return; }
@@ -950,33 +995,31 @@ function monkArm(x,y,dir,hit){
   ctx.imageSmoothingQuality='high'; ctx.drawImage(im,0,-h*.56,w,h);
   ctx.restore();
 }
-function drawAltar(now,t){
-  // 1. Prayer Mat in center aisle
-  ctx.drawImage(MAT, 540 - 130, 1420 - 32, 260, 64);
-
-  // 2. Persistent Censer Incense Sticks & Smoke
+function drawAltar(now,t,dt){
+  ctx.drawImage(MAT, 540 - 130, MAT_Y - 32, 260, 64);
   drawSticks(now,t);
-
-  // 3. Offerings cleanly positioned on table spots
+  // only what was really offered stands here, and only once the giver has set it down
   for (let i=0;i<altar.length;i++){
     const o=altar[i]; if(!o) continue;
+    if (o.reserved){ if (!visitors.has(o.id)) altar[i]=null; continue; }
     const age=(now-o.at)/1000;
     if (age>OFFER_STAY){ altar[i]=null; continue; }
     ctx.save();
     ctx.globalAlpha=Math.min(1,OFFER_STAY-age);
-    const [x,y]=ALTAR_SPOTS[i];
-    drawOffer(o.key,x,y,0.92);
+    drawOffer(o.key,ALTAR_SPOTS[i][0],ALTAR_SPOTS[i][1]);
     ctx.restore();
   }
+  for (let i=fadingOffers.length-1;i>=0;i--){ const f=fadingOffers[i]; f.left-=dt; if (f.left<=0){ fadingOffers.splice(i,1); continue; }
+    ctx.save(); ctx.globalAlpha=f.left; drawOffer(f.key,ALTAR_SPOTS[f.spot][0],ALTAR_SPOTS[f.spot][1]); ctx.restore(); }
 }
 // the last short reach from the giver's raised hands onto the altar
 function drawPlacing(dt,now,t){
-  for (let i=placing.length-1;i>=0;i--){ const f=placing[i]; f.t+=dt; const k=Math.min(1,f.t/.55), e=k*k*(3-2*k), cy=Math.min(f.y0,f.y1)-25, u=1-e;
-    const x=f.x0+(f.x1-f.x0)*e, y=u*u*f.y0+2*u*e*cy+e*e*f.y1, s=f.k0+(1-f.k0)*e;
-    drawHeld(f.key,x,y,f.key==='huong'?.6:s,t);
+  for (let i=placing.length-1;i>=0;i--){ const f=placing[i]; f.t+=dt; const k=Math.min(1,f.t/.55), e=k*k*(3-2*k);
+    const x=f.x0+(f.x1-f.x0)*e, y=f.y0+(f.y1-f.y0)*e;
+    if (f.key==='huong') for (const n of [-5,0,5]) drawHeld(f.key,x+n,y,.6,t); else drawHeld(f.key,x,y,1,t);
     if (k>=1){ placing.splice(i,1);
-      if (f.spot>=0) altar[f.spot]={key:f.key,at:now};
-      else { sticks.push({dx:STICK_X[nextStick++%STICK_X.length],at:now}); if (sticks.length>STICK_X.length) sticks.shift(); smokeBoost=1; } } }
+      if (f.spot>=0){ if (altar[f.spot]?.reserved) altar[f.spot]={key:f.key,at:now}; }
+      else { for (let n=0;n<3;n++){ sticks.push({dx:STICK_X[nextStick++%STICK_X.length],at:now}); if (sticks.length>STICK_X.length) sticks.shift(); } smokeBoost=1; } } }
 }
 function bubble(text,x,y,s){
   const fs=Math.max(18,Math.round(26*Math.min(s,.3)/.4)); ctx.font=`500 ${fs}px "Be Vietnam Pro",system-ui,sans-serif`;
@@ -1002,13 +1045,15 @@ function frame(now){
   showComments(now);
   ctx.setTransform(DPR,0,0,DPR,0,0);
   ctx.fillStyle='#0c0705'; ctx.fillRect(0,0,1080,1920);      // while the hall loads, or if it fails: the light below must not pile up frame after frame
-  if (A.hall.complete && A.hall.naturalWidth){ ctx.drawImage(A.hall,0,0,1080,1920); }
+  if (!backdrop && A.hall.complete && A.hall.naturalWidth) buildBackdrop();
+  if (backdrop) ctx.drawImage(backdrop,0,0,1080,1920);
   drawLights(t,dt);
-  drawAltar(now,t);
+  drawAltar(now,t,dt);
   if (riteQueue.length) startRites();
   // teachers: the one on the left keeps time on the wooden fish, the one on the right strikes the bell
   moHit=Math.max(0,moHit-dt*4.5); bellHit=Math.max(0,bellHit-dt*2.2);
-  monkArm(189,951,-1,moHit); monkArm(891,951,1,bellHit);
+  ctx.drawImage(A.fx_mo,0,0,236,220,160,902,58,54); ctx.drawImage(A.fx_bell,60,0,166,220,858,888,52,68);
+  monkArm(252,892,-1,moHit); monkArm(828,892,1,bellHit);
   for (const tc of TEACHERS){
     if (tc.master){
       ctx.save(); ctx.globalCompositeOperation='lighter'; ctx.globalAlpha=.3+.08*Math.sin(t*1.5);
@@ -1019,14 +1064,12 @@ function frame(now){
       const sheet=getEnhancedSheet(im, tc.master?'contrast(1.15) saturate(1.2)':PERSON_INK);
       const w=Math.round(im.naturalWidth*tc.s), h=Math.round(im.naturalHeight*tc.s);
       const nod=tc.master?Math.round((moHit**2)*2):0;
+      ctx.save(); if (tc.flip){ ctx.translate(tc.x*2,0); ctx.scale(-1,1); }
       ctx.drawImage(sheet,0,0,im.naturalWidth,im.naturalHeight,Math.round(tc.x-w/2),Math.round(tc.y-h+nod),w,h);
+      ctx.restore();
     }
   }
   // visitors back to front
-  const bubbles=[];
-  const activeTagIds=new Set();
-  const activeBubbleIds=new Set();
-  const seatTags=[];
   const list=[...visitors.values()].sort((a,b)=>a.y-b.y);
   for (const v of list){
     const s=v.seat?.scale||.4;
@@ -1034,33 +1077,33 @@ function frame(now){
     else if (v.state==='sitting'){ v.sitT+=dt; v.frame=4+Math.min(3,Math.floor(v.sitT/.22)); if (v.sitT>.9){ v.state='sit'; v.frame=7; } }
     else if (v.seat){ v.x+=(v.seat.x-v.x)*Math.min(1,dt*3); v.y+=(v.seat.y-v.y)*Math.min(1,dt*3); if (v.state==='sit') v.flip = (v.seat.side === 'right'); }      // glide when the grid grows
     v.fade=Math.min(1,v.fade+dt*2); v.glow=Math.max(0,v.glow-dt*.45); v.bow=Math.max(0,v.bow-dt*.7);
-    const r=v.rite, body=r?(RITE_BODY[v.skin]||v.skin):v.skin, anim=hasAnim(body), down=r && ['bow'].includes(r.phase);
-    const inLine=r?.phase==='wait';
-    if (r) r.ws+=((r.back?s:inLine?QUEUE_SCALE:(r.phase==='raise'||r.phase==='place'||(r.phase==='go'&&r.path.length===1))?ALTAR_SCALE:LANE_SCALE)-r.ws)*Math.min(1,dt*2.5);
-    const ws = r ? r.ws : v.state==='walk' ? (.26+.22*Math.max(0,Math.min(1,(v.y-FLOOR_Y_TOP)/(FLOOR_Y_BOT-FLOOR_Y_TOP)))) : s;
+    const r=v.rite, body=r?(RITE_BODY[v.skin]||v.skin):v.skin, anim=hasAnim(body);
+    if (r) r.ws+=((r.back&&r.path.length<=1?s:walkScale(v.y))-r.ws)*Math.min(1,dt*2.5);
+    const ws = r ? r.ws : s;
     if (v.glow>0 || v.skin==='master'){
       ctx.save(); ctx.globalCompositeOperation='lighter'; ctx.globalAlpha=Math.max(v.glow*.75, v.skin==='master'?.35+.1*Math.sin(t*1.6):0);
       const g=ctx.createRadialGradient(v.x,v.y-110*ws,8,v.x,v.y-110*ws,200*ws); g.addColorStop(0,'rgba(255,205,120,.95)'); g.addColorStop(1,'rgba(255,160,60,0)'); ctx.fillStyle=g; ctx.fillRect(v.x-230*ws,v.y-340*ws,460*ws,400*ws); ctx.restore();
     }
     const breathe = v.state==='sit' ? Math.sin(t*1.1+v.phase)*2*ws : 0, bowK = v.state==='sit' ? Math.sin(Math.min(1,v.bow)*Math.PI)*.04 : 0;
-    ctx.save(); ctx.globalAlpha=v.fade; ctx.translate(Math.round(v.x),Math.round(v.y)); if (bowK) ctx.transform(1,0,0,1-bowK,0,0);
-    let topY;
+    const lean = r ? 1-.1*r.stoop : 1-bowK;
+    ctx.save(); ctx.globalAlpha=v.fade; ctx.translate(Math.round(v.x),Math.round(v.y)); if (lean!==1) ctx.transform(1,0,0,lean,0,0);
+    let tip=0;     // how far above the floor the raised hands are at this moment
     if (anim){
       const a=ANIM[body], k=ws*1.05*260/a.seatH*(r&&v.skin==='child'?.82:1), w=a.fw*k, h=a.fh*k;
-      const srcImg=r?riteStrip(body,v.skin,r.carry?(r.carry==='huong'?'incense':'carry'):''):A['anim_'+body];
-      const sheet=getEnhancedSheet(srcImg);
-      if (v.flip) ctx.scale(-1,1);
       const pose=r&&ritePose(r);
+      if (v.flip) ctx.scale(-1,1);
       const drawn=pose?.name&&poseSprite(body,v.skin,pose.name,ws);
       if (drawn) {
         ctx.drawImage(drawn.c,Math.round(-drawn.w/2),Math.round(-drawn.h),Math.round(drawn.w),Math.round(drawn.h));
+        tip=drawn.h*({kneel:.97,k1:.86,k2:.71}[pose.name]||.5);
       } else {
+        const seatFrame=pose?.frame>=4, srcImg=r?riteStrip(body,v.skin,(r.carry||r.phase==='place')&&!seatFrame?'carry':''):A['anim_'+body];
+        const sheet=getEnhancedSheet(srcImg);
         const frameIdx = pose?.frame !== undefined ? pose.frame : (v.frame || 0);
-        const sx = frameIdx * a.fw;
         const dy = Math.round(-h + (v.state==='sit' ? breathe : 0));
-        ctx.drawImage(sheet,sx,0,a.fw,a.fh,Math.round(-w/2),dy,Math.round(w),Math.round(h));
+        ctx.drawImage(sheet,frameIdx*a.fw,0,a.fw,a.fh,Math.round(-w/2),dy,Math.round(w),Math.round(h));
+        tip=h*.955;
       }
-      topY=(v.state==='sit'||down?a.seatH*(1-(r?.bow||0)*.4):a.fh*.97)*k;
     }
     else {
       const srcImg=A[v.skin==='master'?'monk':v.skin]||A.man;
@@ -1070,69 +1113,26 @@ function frame(now){
         const dy=Math.round(-h+breathe);
         ctx.drawImage(sheet,0,0,srcImg.naturalWidth,srcImg.naturalHeight,Math.round(-w/2),dy,Math.round(w),Math.round(h));
       }
-      topY=260*ws;
     }
     ctx.restore();
     if (r){
-      // the strips show the hands: the sticks are in the right hand, and an offering rests on the two raised hands
-      const sk=ws*1.3, incense=r.carry==='huong';
-      // Bắt buộc dùng cả hai tay cầm hương hoặc nâng lễ vật đối xứng ở giữa ngực / trán
-      r.handX = v.x;
-      r.handY = incense ? v.y - 280*sk : v.y - 265*sk;
-      r.handK = ws * 2.1;
-
-      // Vẽ hai tay áo / bàn tay nâng lễ vật hoặc cầm nén hương
-      ctx.save();
-      ctx.fillStyle = RITE_TONE[v.skin] || '#d49b6a';
-      // Tay trái và tay phải nâng đối xứng
-      ctx.beginPath();
-      ctx.arc(v.x - 14*sk, r.handY + 12*sk, 7*sk, 0, 6.28);
-      ctx.arc(v.x + 14*sk, r.handY + 12*sk, 7*sk, 0, 6.28);
-      ctx.fill();
-      ctx.restore();
-
-      if (r.carry && !incense) {
-        drawOffer(r.carry, v.x, r.handY, r.handK);
-      }
-      if (incense){
-        // 3 nén hương thẳng đứng giữa hai tay, tàn hương đỏ rực
-        const ih = 70 * sk;
-        ctx.save();
-        ctx.strokeStyle = '#8b2500';
-        ctx.lineWidth = 2.5 * sk;
-        for (let k = -1; k <= 1; k++) {
-          const ix = v.x + k * 6 * sk;
-          ctx.beginPath(); ctx.moveTo(ix, r.handY + 14*sk); ctx.lineTo(ix, r.handY - ih); ctx.stroke();
-          ember(ix, r.handY - ih, 0.22, t, k);
-        }
-        for (let j=0;j<3;j++){
-          const a=(t*.3+j/3)%1;
-          ctx.globalAlpha=.35*(1-a);
-          stamp(PUFF,v.x+Math.sin(a*6+j)*(2+a*8),r.handY-ih-a*65,.05+a*.15);
-        }
+      r.handX=v.x; r.handY=v.y-tip*lean;
+      const sitting=ritePose(r)?.frame>=4;
+      if (r.carry && r.carry!=='huong' && !sitting) drawOffer(r.carry,v.x,r.handY+2,1.05);     // resting on both raised hands
+      if (r.carry==='huong' && !sitting){
+        // three sticks held upright between both hands
+        const ih=Math.max(40,120*ws), sw=Math.max(1.5,4*ws);
+        ctx.save(); ctx.lineCap='round';
+        for (let n=-1;n<=1;n++){ const ix=v.x+n*sw*1.6;
+          ctx.strokeStyle='#a8682e'; ctx.lineWidth=sw*.75; ctx.beginPath(); ctx.moveTo(ix,r.handY+6); ctx.lineTo(ix+n*2,r.handY-ih); ctx.stroke();
+          ember(ix+n*2,r.handY-ih,.16,t,n); }
+        for (let j=0;j<3;j++){ const a=(t*.3+j/3)%1; ctx.globalAlpha=.3*(1-a); stamp(PUFF,v.x+Math.sin(a*6+j)*(2+a*8),r.handY-ih-a*60,.05+a*.15); }
         ctx.restore();
       }
     }
-    const ty = v.y - topY;
-    const onTheMove = r && !['kneel','bow','rise'].includes(r.phase);
-
-    // Name tags: locked directly to each person's cushion, only show when active/donor/interacted or small crowd
-    const shouldShowTag = (visitors.size <= 40) || (v.coins > 0) || (now < (v.spokeUntil || 0)) || (r && !onTheMove);
-    if (shouldShowTag && activeTagIds.size < 40){
-      activeTagIds.add(v.id);
-      const isGold = v.coins >= 99 || v.skin === 'master';
-      const tagX = v.x;
-      const tagY = v.y + 14; // Centered right at base of cushion!
-      seatTags.push({ id: v.id, name: v.name, x: tagX, y: tagY, isGold, av: v.avatar, fs: 13, maxW: 110 });
-    }
   }
-
-  // Draw name tags: exactly at person's cushion, ZERO relaxation drift
-  for (const st of seatTags){
-    updateTag(st.id, st.name, st.x, st.y, st.isGold, st.av, true, st.fs, st.maxW);
-  }
-  pruneTags(activeTagIds);
-  pruneBubbles(activeBubbleIds);
+  drawTags(list,now);
+  pruneBubbles(new Set());
   // offerings being set down, petals / hearts
   drawPlacing(dt,now,t);
   for (let i=petals.length-1;i>=0;i--){ const p=petals[i]; p.t+=dt; if(p.t>p.life){ petals.splice(i,1); continue; } p.x+=p.vx*dt+Math.sin(p.t*3+i)*20*dt; p.y+=p.vy*dt;
