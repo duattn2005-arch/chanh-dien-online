@@ -20,8 +20,8 @@ npm start
 ```
 
 1. Mở `http://localhost:3000/live/control.html` (bảng điều khiển).
-2. Bấm **Mở màn hình overlay 9:16**, rồi bấm **Bật âm thanh** một lần trong cửa sổ đó (trình duyệt chặn tự phát tiếng).
-3. Trong TikTok LIVE Studio: *Add source → Window capture* → chọn cửa sổ overlay. Với OBS thì dùng *Browser source* trỏ tới `http://localhost:3000/live/overlay.html`, kích thước 1080×1920.
+2. Chạy `live/mo-overlay.bat` để mở overlay cho live: cửa sổ lớn nhất màn hình cho phép, đúng tỉ lệ 9:16, không bị giảm tốc khi bị che, tự có tiếng. Nút **Mở màn hình overlay 9:16** chỉ để xem thử (phải bấm **Bật âm thanh** một lần).
+3. Trong TikTok LIVE Studio: *Add source → Window capture* → chọn cửa sổ overlay, kéo cho đầy khung, cắt bỏ thanh tiêu đề nếu thấy. Với OBS thì dùng *Browser source* trỏ tới `http://localhost:3000/live/overlay.html`, kích thước 1080×1920.
 4. Bật LIVE trên TikTok, nhập `@username` vào bảng điều khiển, bấm **Kết nối**.
 
 Chưa live vẫn thử được: dùng **Thử tương tác**, **Đổ người mẫu 15/36/64/100** hoặc **Bot mô phỏng**.
@@ -30,7 +30,7 @@ Chưa live vẫn thử được: dùng **Thử tương tác**, **Đổ người 
 
 - **Bình luận bất kỳ**: được vào ngồi (tối đa 100 chỗ, chỗ ngồi tự mở rộng 24 → 36 → 64 → 100). Đầy chỗ thì người im lặng lâu nhất mà chưa tặng quà sẽ nhường chỗ.
 - **Bình luận đúng một từ** `nam`, `nữ`, `sư`, `ni`, `tiểu`, `bà`, `cao tăng`: đổi hình nhân vật. Câu "Nam mô A Di Đà Phật" không bị hiểu nhầm thành "nam".
-- **Tặng quà**: banner xướng tên, giọng đọc hồi hướng (lấy lời nguyện từ bình luận gần nhất của người đó nếu có), hiệu ứng theo giá trị quà, cộng điểm vào bảng Công Đức.
+- **Tặng quà**: người tặng đứng dậy, đi lên sát ban thờ đặt lễ (hương thì cắm vào lư hương), lùi về chiếu ngay giữa dưới hòa thượng, lạy ba lạy rồi về chỗ. Mỗi lần một người, còn lại xếp hàng lần lượt ở lối giữa. Kèm banner xướng tên, giọng đọc hồi hướng (lấy lời nguyện từ bình luận gần nhất của người đó nếu có), cộng điểm vào bảng Công Đức. Món lễ tính theo số xu của lần tặng (giá quà × số lượng). Từ 1 xu: thắp hương. Từ 5: hoa sen. Từ 10: đôi nến. Từ 30: mâm ngũ quả. Từ 50: bánh chưng. Từ 100: xôi chè. Từ 500: lễ hoa quả. Từ 1.000: lễ xôi quả. Từ 5.000: mâm lễ chay. Từ 30.000: đại lễ chay. Toàn đồ chay. Đổi món và mốc xu trong bảng `OFFERINGS` ở `live/server.mjs`, ảnh từng món ở `assets/offer_*.png`.
 - **Thả tim**: tim bay trên đầu nhân vật.
 
 ## Bảo mật
@@ -51,7 +51,7 @@ Các lớp trên đã được thử: đường dẫn `../`, `%2e%2e`, `.git/con
 
 - `tiktok-live-connector` là thư viện cộng đồng, không phải API chính thức của TikTok. Nó có thể ngừng chạy khi TikTok đổi hệ thống. Kiểm tra điều khoản TikTok trước khi dùng cho kênh của bạn.
 - Giọng đọc dùng dịch vụ Read Aloud của Microsoft Edge qua mạng (giọng Nam Minh, Hoài My). Máy phát cần có Internet.
-- Hình ảnh trong `assets/` được tạo bằng Google Flow, nhạc nền tạo bằng Gemini. Kiểm tra điều khoản của các dịch vụ đó trước khi dùng thương mại, hoặc thay bằng tài nguyên của bạn.
+- Hình ảnh trong `assets/` được tạo bằng Google Flow, ảnh `offer_*.png` tạo bằng Canva, nhạc nền tạo bằng Gemini. Kiểm tra điều khoản của các dịch vụ đó trước khi dùng thương mại, hoặc thay bằng tài nguyên của bạn.
 
 ## Miễn trừ trách nhiệm
 
