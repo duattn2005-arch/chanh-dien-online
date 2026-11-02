@@ -2,7 +2,7 @@
 #  - as large as Windows allows, in exact 9:16, so the capture needs little or no upscaling
 #  - keeps drawing when covered by another window (a normal browser pauses and the stream stutters)
 #  - apart from the other tabs, and with sound on from the start
-$Url = 'http://localhost:3000/live/overlay.html?auto=1'
+$Url = 'http://localhost:3000/live/overlay.html?auto=1&fps=30'
 $Browser = @("$env:ProgramFiles\Google\Chrome\Application\chrome.exe", "${env:ProgramFiles(x86)}\Google\Chrome\Application\chrome.exe", "$env:LOCALAPPDATA\Google\Chrome\Application\chrome.exe", "${env:ProgramFiles(x86)}\Microsoft\Edge\Application\msedge.exe", "$env:ProgramFiles\Microsoft\Edge\Application\msedge.exe") | Where-Object { Test-Path $_ } | Select-Object -First 1
 if (-not $Browser) { Write-Host 'Không tìm thấy Chrome hoặc Edge.'; Read-Host 'Nhấn Enter để đóng'; exit 1 }
 try { $null = Invoke-WebRequest 'http://localhost:3000/live/overlay.html' -UseBasicParsing -TimeoutSec 3 } catch { Write-Host 'Server chưa chạy. Hãy chạy npm start trong thư mục live trước.'; Read-Host 'Nhấn Enter để đóng'; exit 1 }
