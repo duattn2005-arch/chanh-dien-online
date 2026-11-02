@@ -42,19 +42,19 @@ const CAPS = [24, 36, 64, 100];
 function capacity(){ if (settings.seatMode !== 'auto') return +settings.seatMode; const n = viewers.size; return CAPS.find(c => n <= c) || 100; }
 
 /* skins: sprites that exist in /assets. Walking strips exist for man / woman / granny. */
-// A comment changes the outfit only when it IS the keyword (≤ 3 words), so "Nam mô A Di Đà Phật" never reads as "nam".
+// A comment changes the outfit only when the whole comment IS the keyword: "Nam mô", "chị ơi" or "thầy ơi" are ordinary talk. Words people use to address each other are not keywords.
 const SKIN_WORDS = [
-  ['master', ['cao tăng','cao tang']], ['monk', ['sư','su','sư thầy','su thay','thầy','thay']], ['nun', ['ni','ni cô','ni co','sư cô','su co']],
-  ['child', ['tiểu','tieu','chú tiểu','chu tieu','bé','be']], ['granny', ['bà','ba','áo nâu','ao nau','cụ','cu']],
-  ['woman', ['nữ','nu','chị','chi','gái','gai']], ['man', ['nam','anh','trai']],
+  ['master', ['cao tăng','cao tang']], ['monk', ['sư','su','sư thầy','su thay']], ['nun', ['ni','ni cô','ni co','sư cô','su co']],
+  ['child', ['tiểu','tieu','chú tiểu','chu tieu']], ['granny', ['bà','áo nâu','ao nau']],
+  ['woman', ['nữ','nu']], ['man', ['nam']],
 ];
 function skinFromText(t){
   const w = String(t).toLowerCase().normalize('NFC').replace(/[^\p{L}\s]/gu, ' ').replace(/\s+/g, ' ').trim();
-  if (!w || w.split(' ').length > 3) return null;
-  for (const [skin, words] of SKIN_WORDS) if (words.some(k => w === k || w.startsWith(k + ' '))) return skin;
+  for (const [skin, words] of SKIN_WORDS) if (words.includes(w)) return skin;
   return null;
 }
-const DEFAULT_SKINS = ['man', 'woman', 'woman', 'man', 'granny'];
+const DEFAULT_SKINS = ['man', 'woman', 'woman', 'man', 'granny'], chosenSkins = new Map();     // id -> the outfit they asked for
+const defaultSkin = id => DEFAULT_SKINS[[...String(id)].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 0) % DEFAULT_SKINS.length];
 
 // What one gift (price × count) becomes on the altar: vegetarian offerings only, as on a Buddha's altar. The thresholds live only here: the overlay receives them in its snapshot.
 const OFFERINGS = [
@@ -83,7 +83,7 @@ function seat(id, name, opts = {}){
     const out = idle.filter(x => x.coins === 0).sort((a,b) => a.lastAt - b.lastAt)[0] || idle.sort((a,b) => a.coins - b.coins || a.lastAt - b.lastAt)[0] || all.sort((a,b) => a.lastAt - b.lastAt)[0];
     viewers.delete(out.id); broadcast({ t:'leave', id: out.id });
   }
-  v = { id, name: (name||id).slice(0, 18), skin: opts.skin || DEFAULT_SKINS[viewers.size % DEFAULT_SKINS.length],
+  v = { id, name: (name||id).slice(0, 18), skin: opts.skin || chosenSkins.get(id) || defaultSkin(id),
         avatar: opts.avatar || '', coins: 0, joinedAt: Date.now(), lastAt: Date.now(), demo: !!opts.demo };
   viewers.set(id, v);
   broadcast({ t:'join', v: pub(v), cap: capacity() });
@@ -94,6 +94,7 @@ function seat(id, name, opts = {}){
 function onChat(id, name, text, avatar){
   text = String(text || '').slice(0, 120); id = String(id ?? name ?? 'khach');
   const want = skinFromText(text);
+  if (want) chosenSkins.set(id, want);
   const { v, isNew } = seat(id, name, { avatar, skin: want || undefined });
   if (!isNew && want && want !== v.skin){ v.skin = want; broadcast({ t:'skin', id, skin: want }); }
   v.lastText = text; v.lastTextAt = Date.now();

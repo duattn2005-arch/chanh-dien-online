@@ -146,7 +146,7 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:var(-
   <div id="guide" class="card ui">
     <h3>✦ Dâng Cúng ✦</h3>
     <ol id="ladder"></ol>
-    <div class="hint">💬 <b>Bình luận</b> để vào ngồi. Gõ <b>nam · nữ · sư · ni</b> để đổi hình</div>
+    <div class="hint">💬 <b>Bình luận</b> để vào ngồi thắp hương. Gõ <b>nam · nữ · sư · ni</b> để đổi hình</div>
   </div>
   <div id="merit" class="card ui"><h3>✦ Công Đức ✦</h3><ol id="meritList"><li class="empty">Chưa có</li></ol></div>
   <div id="chant" class="ui"><h4>✦ TỤNG KINH ĐỊNH KỲ ✦</h4><p id="chantText"></p></div>
@@ -273,7 +273,7 @@ function renderMerit(){
 }
 function renderLadder(offers){
   const ol=document.getElementById('ladder'); ol.innerHTML='';
-  for (const o of offers||[]){ const li=document.createElement('li'); const a=document.createElement('span'); a.textContent=o.short; const b=document.createElement('span'); b.textContent=`${o.min.toLocaleString('vi-VN')} xu`; li.append(a,b); ol.append(li); }
+  for (const o of offers||[]){ if (o.key==='huong') continue; const li=document.createElement('li'); const a=document.createElement('span'); a.textContent=o.short; const b=document.createElement('span'); b.textContent=`${o.min.toLocaleString('vi-VN')} xu`; li.append(a,b); ol.append(li); }
 }
 setInterval(()=>{ const s=Math.floor((Date.now()-startedAt)/1000); document.getElementById('timer').textContent=[s/3600,s/60%60,s%60].map(x=>String(Math.floor(x)).padStart(2,'0')).join(':'); },1000);
 let giftHide=null;
@@ -486,7 +486,7 @@ const OFFER_PARTS={lequa:['nguqua','sen'],lexoi:['xoi','nguqua'],lechay:['nguqua
 // The offering table stands empty in two wings, leaving the way to the censer open. Spots fill from the aisle outwards, front row first.
 const TABLE={top:960,front:1035,bottom:1068,in:40,out:412,backOut:390}, ALTAR_SPOTS=[];
 for (const [y,n] of [[1033,6],[977,5]]) for (let i=0;i<n;i++) for (const d of [-1,1]) ALTAR_SPOTS.push([540+d*(72+i*62),y]);
-const CENSER = [540, 802], OFFER_STAY = 240;
+const CENSER = [540, 802];
 const altar=new Array(ALTAR_SPOTS.length).fill(null), fadingOffers=[], placing=[], sticks=[]; let nextStick=0, smokeBoost=0;
 function getFreeAltarSpot(id, key){
   let i=altar.indexOf(null);
@@ -498,23 +498,34 @@ function getFreeAltarSpot(id, key){
   altar[i]={key,id,reserved:true};
   return i;
 }
-const walkScale=y=>.4+.24*Math.max(0,Math.min(1,(y-FLOOR_Y_TOP)/(FLOOR_Y_BOT-FLOOR_Y_TOP)));
+const CORNER=14, walkScale=y=>.4+.24*Math.max(0,Math.min(1,(y-FLOOR_Y_TOP)/(FLOOR_Y_BOT-FLOOR_Y_TOP)));
 const MAT_Y=1240, LANES=[[540,MAT_Y]], LANE_APPROACH=MAT_Y, ALTAR_Y=1036, CORRIDOR_Y=1094, QUEUE_Y=1410, QUEUE_GAP=130, MAX_LINE=3, SIDE_LANE=92, laneBusy=[null], riteQueue=[];
 const STICK_X=[0,-14,14,-26,26,-7,7,-20,20,-32,32,-3], STICK_BASE=[537,798], STICK_LIFE=180;
 // Only man, woman and granny have walking frames: the other outfits borrow one for the rite, recoloured to match.
-const RITE_BODY={monk:'man',master:'man',child:'man',nun:'woman',granny:'woman'}, RITE_TONE={monk:'rgba(140,72,22,.62)',master:'rgba(160,84,18,.62)',nun:'rgba(120,84,50,.55)',granny:'rgba(110,62,28,.5)'}, riteStrips={};
+const RITE_BODY={monk:'man',master:'man',child:'man',nun:'man',granny:'woman'}, RITE_LOOK={monk:{cloth:[150,78,30],hair:[214,170,130]},master:{cloth:[170,90,24],hair:[214,170,130]},nun:{cloth:[135,138,155],hair:[125,128,145]},granny:{cloth:[120,62,30],hair:[176,172,166]}}, riteStrips={};
+// The grey suit becomes this person's own clothes and the black hair their own, keeping every fold's light and shade. Skin, hands and pages are untouched.
+function repaint(g,w,h,skin){
+  const look=RITE_LOOK[skin]; if (!look) return;
+  const d=g.getImageData(0,0,w,h), p=d.data;
+  for (let i=0;i<p.length;i+=4){ if (!p[i+3]) continue;
+    const lum=(p[i]+p[i+1]+p[i+2])/3, warm=p[i]>p[i+2]+25 && p[i]>=p[i+1];     // skin, feet and the book are warm; the suit, its outline and the hair are not
+    if (lum>225 || warm && lum>=40) continue;
+    const [c,k]=lum<70?[look.hair,.6+lum/110]:[look.cloth,lum/165];
+    for (let n=0;n<3;n++) p[i+n]=Math.min(255,c[n]*k);
+  }
+  g.putImageData(d,0,0);
+}
 const POSE_H={kneel:285,k1:285,k2:285,bow:118}, poseCache=new Map();     // height of each posture, for a scale of 1
 function poseSprite(body,skin,name,ws){
   let im=A[`pose_${body}_${name}`]; if (!im?.complete || !im.naturalWidth) im=A[`pose_man_${name}`];     // a posture not drawn yet for this body borrows the man's, so the rite is never skipped
   if (!im?.complete || !im.naturalWidth) return null;
-  const h=POSE_H[name]*ws*(skin==='child'?.82:1), w=im.naturalWidth*h/im.naturalHeight, tone=RITE_TONE[skin]||'', key=`${im.src}|${tone}|${Math.round(h)}`;
+  const h=POSE_H[name]*ws*(skin==='child'?.82:1), w=im.naturalWidth*h/im.naturalHeight, key=`${im.src}|${RITE_LOOK[skin]?skin:''}|${Math.round(h)}`;
   let c=poseCache.get(key);
   if (!c){
     const rw=Math.ceil(w), rh=Math.ceil(h);
     c=makeSprite(rw,rh,g=>{
       g.imageSmoothingEnabled=true; g.imageSmoothingQuality='high';
-      g.filter=PERSON_INK; g.drawImage(im,0,0,rw,rh); g.filter='none';
-      if (tone){ g.globalCompositeOperation='source-atop'; g.fillStyle=tone; g.fillRect(0,0,rw,rh); }
+      g.filter=PERSON_INK; g.drawImage(im,0,0,rw,rh); g.filter='none'; repaint(g,rw,rh,skin);
     });
     poseCache.set(key,c);
   }
@@ -523,7 +534,7 @@ function poseSprite(body,skin,name,ws){
 // The drawing to show at this moment of the rite. Nothing is stretched or faded: going down and coming up are a series of separate drawings, like hand animation,
 // in which the knees and hips stay put and only the body above them moves. Null means the walking frame.
 function ritePose(r){
-  if (r.stand>0) return {frame:4+Math.min(3,Math.floor(r.stand/.22))};     // getting up from the cushion
+  if (r.stand>0) return {frame:4+Math.min(3,Math.floor(r.stand/.15))};     // getting up from the cushion
   const holding=r.carry==='huong';     // the sticks stay in both raised hands, so the postures without raised hands are skipped
   switch (r.phase){
     case 'kneel': return holding||r.t>=.5?{name:'kneel'}:r.t<.25?{frame:5}:{frame:6};
@@ -535,8 +546,8 @@ function ritePose(r){
 // kind: 'carry' walks with both hands raised, holding the incense or under the offering; '' empty-handed
 function riteStrip(body,skin,kind){
   let im=A[`anim_${kind?kind+'_':''}${body}`]; if (!im?.complete || !im.naturalWidth) im=A['anim_'+body];
-  if (!RITE_TONE[skin] || !im.complete || !im.naturalWidth) return im;
-  if (!riteStrips[skin+kind]){ riteStrips[skin+kind]=makeSprite(im.naturalWidth,im.naturalHeight,g=>{ g.drawImage(im,0,0); g.globalCompositeOperation='source-atop'; g.fillStyle=RITE_TONE[skin]; g.fillRect(0,0,im.naturalWidth,im.naturalHeight); }); riteStrips[skin+kind].src='strip:'+skin+kind; }
+  if (!RITE_LOOK[skin] || !im.complete || !im.naturalWidth) return im;
+  if (!riteStrips[skin+kind]){ riteStrips[skin+kind]=makeSprite(im.naturalWidth,im.naturalHeight,g=>{ g.drawImage(im,0,0); repaint(g,im.naturalWidth,im.naturalHeight,skin); }); riteStrips[skin+kind].src='strip:'+skin+kind; }
   return riteStrips[skin+kind];
 }
 window.offerFx = offerFx;
@@ -544,12 +555,18 @@ window.offerFx = offerFx;
 function offerFx(v, m){
   if (!v) return;
   // every gift is honoured: a burst of roses from one person is one trip that plants all their sticks
-  const same=m.offer==='huong' && riteQueue.find(q=>q.id===m.id && q.items.every(k=>k==='huong'));
+  const same=m.offer==='huong' && riteQueue.find(q=>q.id===m.id && !q.free && q.items.every(k=>k==='huong'));
   if (same) same.items.push('huong');
-  else riteQueue.push({id:m.id, items:OFFER_PARTS[m.offer]?[...OFFER_PARTS[m.offer]]:[m.offer]});
+  else { const at=riteQueue.findIndex(q=>q.free); riteQueue.splice(at<0?riteQueue.length:at,0,{id:m.id, items:OFFER_PARTS[m.offer]?[...OFFER_PARTS[m.offer]]:[m.offer]}); }
   startRites();
 }
-function makeRite(v,q,fields){ const seated=v.state==='sit'&&!v.rite; v.state='walk'; v.flip=false; v.frame=0; v.ft=0; return {t:0,items:q.items,big:q.big,sent:0,carry:q.items[0],bow:0,bows:0,stoop:0,back:false,stand:seated?.66:0,handY:v.y-60,ws:v.rite?.ws??(v.seat?.scale||.4),...fields}; }
+// Every comment earns a stick of incense. Gifts go ahead of these, and one trip at a time per person keeps the line no longer than the hall.
+function commentIncense(v){
+  if (v.rite || riteQueue.some(q=>q.id===v.id)) return;
+  riteQueue.push({id:v.id, items:['huong'], free:true});
+  startRites();
+}
+function makeRite(v,q,fields){ const seated=v.state==='sit'&&!v.rite; v.state='walk'; v.flip=false; v.frame=0; v.ft=0; return {t:0,items:q.items,big:q.big,sent:0,carry:q.items[0],bow:0,bows:0,stoop:0,back:false,stand:seated?.45:0,handY:v.y-60,ws:v.rite?.ws??(v.seat?.scale||.4),...fields}; }
 function startRites(){
   for (let i=0;i<LANES.length;i++) if (laneBusy[i] && !visitors.has(laneBusy[i])) laneBusy[i]=null;
   for (let i=0;i<LANES.length && riteQueue.length;i++){      // the centre fills first
@@ -587,20 +604,26 @@ function toSideLane(v,y){
   return [[v.x,rowY],[lane,rowY],[lane,y]];
 }
 function ritePath(v,r,dt){
-  const [px,py]=r.path[0], depth=Math.max(0,Math.min(1.5,(v.y-FLOOR.yTop)/(FLOOR.yBot-FLOOR.yTop))), sp=(120+130*depth)*dt*(r.rev?.8:1), dx=px-v.x, dy=py-v.y, d=Math.hypot(dx,dy), moved=Math.min(d,sp);
-  if (d<=sp){ v.x=px; v.y=py; r.path.shift(); } else { v.x+=dx/d*sp; v.y+=dy/d*sp; }
+  if (r.path.length>1 && Math.hypot(r.path[0][0]-v.x,r.path[0][1]-v.y)<CORNER) r.path.shift();     // round the corner instead of stopping dead at it
+  const start=!r.pace, last=r.path.length===1; r.pace=Math.min(1,(r.pace||0)+dt*3);
+  const [px,py]=r.path[0], depth=Math.max(0,Math.min(1.5,(v.y-FLOOR.yTop)/(FLOOR.yBot-FLOOR.yTop))), dx=px-v.x, dy=py-v.y, d=Math.hypot(dx,dy), sp=(190+200*depth)*dt*(r.rev?.8:1)*(.3+.7*r.pace)*(last?Math.min(1,.3+d/90):1), moved=Math.min(d,sp);
+  if (d<=sp){ v.x=px; v.y=py; r.path.shift(); }
+  else {     // the heading swings round gradually; close to the destination it points straight there, so nobody circles it
+    const k=start||(last&&d<50)?1:Math.min(1,dt*7); r.hx=start?dx/d:r.hx+(dx/d-r.hx)*k; r.hy=start?dy/d:r.hy+(dy/d-r.hy)*k;
+    const n=Math.hypot(r.hx,r.hy)||1; v.x+=r.hx/n*sp; v.y+=r.hy/n*sp;
+  }
   v.flip=Math.abs(dx)>Math.abs(dy) && (dx<0)!==!!r.rev;
   // frames follow the distance covered, so the feet never slide over the floor
   v.ft+=moved; if (v.ft>97*r.ws){ v.ft=0; v.frame=(v.frame+(r.rev?3:1))%4; }     // the step runs in reverse when backing away
   return !r.path.length;
 }
 function goHome(v,r){
-  r.back=true; r.rev=true; r.carry=null; v.frame=0; v.ft=0; r.phase='back'; r.t=0;
+  r.back=true; r.rev=true; r.carry=null; v.frame=0; v.ft=0; r.phase='back'; r.t=0; r.pace=0;
   const seat=v.seat||{x:540,y:1500,gap:60}, lane=540+(seat.x<540?-1:1)*SIDE_LANE, rowY=seat.y-seat.gap/2;
   r.path=[[lane,LANE_APPROACH],[lane,rowY],[seat.x,rowY],[seat.x,seat.y]];     // down the walkway beside the line, then between the rows
 }
 function stepRite(v,dt,now){
-  const r=v.rite, next=p=>{ r.phase=p; r.t=0; };
+  const r=v.rite, next=p=>{ r.phase=p; r.t=0; r.pace=0; };
   if (r.stand>0){ r.stand-=dt; return; }
   r.t+=dt;
   const incense=r.items[0]==='huong';
@@ -608,7 +631,7 @@ function stepRite(v,dt,now){
     case 'wait':
       if (r.joining){ if (ritePath(v,r,dt)){ r.joining=false; v.frame=0; v.flip=false; } }
       else if (Math.abs(v.y-r.spot)>2){ r.path=[[540,r.spot]]; ritePath(v,r,dt); }      // everyone moves up together, keeping their distance
-      else { v.frame=0; v.flip=false; }
+      else { v.frame=0; v.flip=false; r.pace=0; }
       break;
     case 'go': if (ritePath(v,r,dt)){ v.frame=0; v.flip=false; next(incense&&!r.bows?'kneel':'raise'); } break;
     case 'raise': if (r.t>.5) next('place'); break;
@@ -649,7 +672,7 @@ function stepRite(v,dt,now){
       break;
     case 'back': {
       // the next person comes up only once this one has left the space in front of the altar
-      if (laneBusy[r.lane]===v.id && Math.abs(v.x-540)>=SIDE_LANE && v.y>=LANE_APPROACH) laneBusy[r.lane]=null;
+      if (laneBusy[r.lane]===v.id && Math.abs(v.x-540)>=SIDE_LANE-CORNER-1 && v.y>=LANE_APPROACH) laneBusy[r.lane]=null;
       if (ritePath(v,r,dt)){
         if (laneBusy[r.lane]===v.id) laneBusy[r.lane]=null;
         v.rite=null; v.flip=false;
@@ -681,7 +704,7 @@ function connect(){
       case 'chat': {
         const v = visitors.get(m.id);
         const name = v ? v.name : (m.name || 'Phật tử');
-        if (v) v.spokeUntil = Date.now() + 20000;
+        if (v){ v.spokeUntil = Date.now() + 20000; commentIncense(v); }
         showCommentBanner(name, m.text);
         break;
       }
@@ -799,7 +822,7 @@ const tagBox = v => {
   const fs = v.seat?.fs || 15, w = tagWidth(v.name, fs, v.rite ? 124 : v.seat?.tagW || 124);
   return { fs, w, x: Math.max(w / 2 + 3, Math.min(1077 - w / 2, v.x)), y: v.y - TAG_DROP };
 };
-const tagWalking = v => v.rite && Math.abs(v.x - 540) >= SIDE_LANE - 1;     // among the rows and along the table the name would lie on other people
+const tagWalking = v => v.rite && Math.abs(v.x - 540) >= SIDE_LANE - CORNER - 1;     // among the rows and along the table the name would lie on other people
 function chooseTags(list, now){
   const rank = v => v.rite ? 0 : now < (v.spokeUntil || 0) ? 1 : v.coins > 0 ? 2 : 3;
   const placed = []; tagShown = new Set();
@@ -1002,12 +1025,7 @@ function drawAltar(now,t,dt){
   for (let i=0;i<altar.length;i++){
     const o=altar[i]; if(!o) continue;
     if (o.reserved){ if (!visitors.has(o.id)) altar[i]=null; continue; }
-    const age=(now-o.at)/1000;
-    if (age>OFFER_STAY){ altar[i]=null; continue; }
-    ctx.save();
-    ctx.globalAlpha=Math.min(1,OFFER_STAY-age);
     drawOffer(o.key,ALTAR_SPOTS[i][0],ALTAR_SPOTS[i][1]);
-    ctx.restore();
   }
   for (let i=fadingOffers.length-1;i>=0;i--){ const f=fadingOffers[i]; f.left-=dt; if (f.left<=0){ fadingOffers.splice(i,1); continue; }
     ctx.save(); ctx.globalAlpha=f.left; drawOffer(f.key,ALTAR_SPOTS[f.spot][0],ALTAR_SPOTS[f.spot][1]); ctx.restore(); }
@@ -1074,7 +1092,7 @@ function frame(now){
   for (const v of list){
     const s=v.seat?.scale||.4;
     if (v.rite) stepRite(v,dt,now);
-    else if (v.state==='sitting'){ v.sitT+=dt; v.frame=4+Math.min(3,Math.floor(v.sitT/.22)); if (v.sitT>.9){ v.state='sit'; v.frame=7; } }
+    else if (v.state==='sitting'){ v.sitT+=dt; v.frame=4+Math.min(3,Math.floor(v.sitT/.15)); if (v.sitT>.6){ v.state='sit'; v.frame=7; } }
     else if (v.seat){ v.x+=(v.seat.x-v.x)*Math.min(1,dt*3); v.y+=(v.seat.y-v.y)*Math.min(1,dt*3); if (v.state==='sit') v.flip = (v.seat.side === 'right'); }      // glide when the grid grows
     v.fade=Math.min(1,v.fade+dt*2); v.glow=Math.max(0,v.glow-dt*.45); v.bow=Math.max(0,v.bow-dt*.7);
     const r=v.rite, body=r?(RITE_BODY[v.skin]||v.skin):v.skin, anim=hasAnim(body);
@@ -1116,7 +1134,7 @@ function frame(now){
     }
     ctx.restore();
     if (r){
-      r.handX=v.x; r.handY=v.y-tip*lean;
+      r.handX=Math.round(v.x); r.handY=Math.round(v.y)-tip*lean;
       const sitting=ritePose(r)?.frame>=4;
       if (r.carry && r.carry!=='huong' && !sitting) drawOffer(r.carry,v.x,r.handY+2,1.05);     // resting on both raised hands
       if (r.carry==='huong' && !sitting){
