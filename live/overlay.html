@@ -47,65 +47,65 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:var(-
 /* Bottom Comment Bar (Exact match to temple livestream photo) */
 #comment-bar{
   position:absolute;left:50%;bottom:24px;transform:translateX(-50%);
-  z-index:7;width:860px;height:56px;box-sizing:border-box;padding:0 24px;border-radius:28px;
+  z-index:7;width:980px;height:64px;box-sizing:border-box;padding:0 24px;border-radius:28px;
   background:linear-gradient(180deg,#381206,#1c0802);
   border:2px solid var(--gold);box-shadow:0 6px 25px rgba(0,0,0,.85),0 0 12px rgba(226,176,79,.3);
   display:flex;align-items:center;gap:12px;font-family:var(--body);
   transition:all .35s ease;
 }
-.cb-icon{font-size:24px;flex-shrink:0}
-.cb-label{font-weight:700;font-size:22px;color:var(--gold2);letter-spacing:.02em;flex-shrink:0}
-.cb-text{font-weight:500;font-size:21px;color:#fff6e4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+.cb-icon{font-size:30px;flex-shrink:0}
+.cb-label{font-weight:700;font-size:28px;color:var(--gold2);letter-spacing:.02em;flex-shrink:0}
+.cb-text{font-weight:500;font-size:27px;color:#fff6e4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
 /* title plaque & gift banner */
-#plaque{left:40px;right:40px;top:76px;height:130px;box-sizing:border-box;border:3px solid var(--gold);border-radius:26px;
+#plaque{left:40px;right:40px;top:80px;height:154px;box-sizing:border-box;border:3px solid var(--gold);border-radius:26px;
   background:linear-gradient(180deg,rgba(70,22,10,.95),rgba(32,10,4,.95));box-shadow:0 8px 30px rgba(0,0,0,.85),0 0 25px rgba(226,176,79,.25);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;z-index:5}
 #plaque::before,#plaque::after{content:"🪷";position:absolute;top:50%;transform:translateY(-50%);font-size:38px;color:var(--gold)}
 #plaque::before{left:26px}#plaque::after{right:26px}
-#title{font-family:var(--display);font-weight:700;font-size:42px;letter-spacing:.05em;color:var(--gold2);text-shadow:0 2px 4px #000,0 0 15px rgba(255,217,138,.35)}
-#subtitle{font-family:var(--display);font-size:22px;letter-spacing:.08em;color:var(--fg);opacity:.95}
-#subpray{font-family:var(--display);font-style:italic;font-size:20px;color:var(--gold2);opacity:.9}
+#title{font-family:var(--display);font-weight:700;font-size:50px;letter-spacing:.05em;color:var(--gold2);text-shadow:0 2px 4px #000,0 0 15px rgba(255,217,138,.35)}
+#subtitle{font-family:var(--display);font-size:27px;letter-spacing:.08em;color:var(--fg);opacity:.95}
+#subpray{font-family:var(--display);font-style:italic;font-size:25px;color:var(--gold2);opacity:.9}
 
 /* pills at top */
 #pills{top:16px;left:0;right:0;display:flex;justify-content:center;gap:20px;z-index:6}
-.pill{background:rgba(28,10,4,.92);border:2px solid var(--gold);border-radius:999px;padding:8px 24px;font-size:26px;font-weight:700;display:flex;align-items:center;gap:12px;font-variant-numeric:tabular-nums;color:#fff6e4;box-shadow:0 4px 18px rgba(0,0,0,.75)}
-.pill small{font-size:19px;font-weight:600;color:var(--gold2);line-height:1}
+.pill{background:rgba(28,10,4,.92);border:2px solid var(--gold);border-radius:999px;padding:8px 24px;font-size:30px;font-weight:700;display:flex;align-items:center;gap:12px;font-variant-numeric:tabular-nums;color:#fff6e4;box-shadow:0 4px 18px rgba(0,0,0,.75)}
+.pill small{font-size:24px;font-weight:600;color:var(--gold2);line-height:1}
 .dot{width:16px;height:16px;border-radius:50%;background:#3ae368;box-shadow:0 0 12px #3ae368}
 
 /* side cards */
 .card{background:var(--panel);border:2px solid var(--line);border-radius:22px;padding:16px 20px;font-size:23px;line-height:1.35;box-shadow:0 8px 25px rgba(0,0,0,.8)}
-#guide{left:24px;top:222px;width:290px}
-#guide h3{margin:0 0 6px;font-family:var(--display);font-size:28px;color:var(--gold2);letter-spacing:.06em;text-align:center}
+#guide{left:16px;top:246px;width:320px}
+#guide h3{margin:0 0 6px;font-family:var(--display);font-size:33px;color:var(--gold2);letter-spacing:.06em;text-align:center}
 #ladder{margin:0;padding:0;list-style:none;display:grid;gap:0}
-#ladder li{display:flex;justify-content:space-between;gap:10px;font-size:20px;line-height:1.28}
+#ladder li{display:flex;justify-content:space-between;gap:10px;font-size:27px;line-height:1.22}
 #ladder li span:last-child{color:var(--gold2);font-variant-numeric:tabular-nums}
-#guide .hint{border-top:1px solid rgba(226,176,79,.3);margin-top:8px;padding-top:6px;font-size:19px;line-height:1.25;color:var(--muted)}
+#guide .hint{border-top:1px solid rgba(226,176,79,.3);margin-top:8px;padding-top:6px;font-size:22px;line-height:1.25;color:var(--muted)}
 #guide .hint b{color:var(--gold2)}
-#merit{right:24px;top:222px;width:290px;text-align:center}
-#merit h3{margin:0 0 6px;font-family:var(--display);font-size:28px;color:var(--gold2);letter-spacing:.06em}
+#merit{right:16px;top:246px;width:320px;text-align:center}
+#merit h3{margin:0 0 6px;font-family:var(--display);font-size:33px;color:var(--gold2);letter-spacing:.06em}
 #merit ol{margin:0;padding:0;list-style:none;text-align:left;display:grid;gap:5px}
-#merit li{display:flex;justify-content:space-between;gap:10px;font-size:21px}
+#merit li{display:flex;justify-content:space-between;gap:10px;font-size:28px}
 #merit li span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #merit li span:last-child{color:var(--gold2);font-variant-numeric:tabular-nums}
 #merit .empty{color:var(--muted);text-align:center}
 
 /* chant banner + gift banner */
-#chant{left:40px;right:40px;top:76px;height:130px;box-sizing:border-box;padding:12px 28px;text-align:center;border-radius:26px;border:3px solid var(--gold);
+#chant{left:40px;right:40px;top:80px;height:154px;box-sizing:border-box;padding:12px 28px;text-align:center;border-radius:26px;border:3px solid var(--gold);
   background:linear-gradient(180deg,rgba(50,18,8,.96),rgba(24,8,3,.96));opacity:0;transform:translateY(-10px);transition:opacity .4s,transform .4s;z-index:6;box-shadow:0 8px 30px rgba(0,0,0,.85)}
 #chant.show{opacity:1;transform:none}
-#chant h4{margin:0 0 4px;font-family:var(--display);color:var(--gold2);font-size:22px;letter-spacing:.1em}
-#chant p{margin:0;font-family:var(--display);font-style:italic;font-size:24px;line-height:1.3;color:#fff6e4}
+#chant h4{margin:0 0 4px;font-family:var(--display);color:var(--gold2);font-size:27px;letter-spacing:.1em}
+#chant p{margin:0;font-family:var(--display);font-style:italic;font-size:29px;line-height:1.3;color:#fff6e4}
 
-#gift{left:40px;right:40px;top:76px;height:130px;z-index:7;box-sizing:border-box;padding:10px 36px;text-align:center;border-radius:26px;border:3px solid var(--gold2);
+#gift{left:40px;right:40px;top:80px;height:154px;z-index:7;box-sizing:border-box;padding:10px 36px;text-align:center;border-radius:26px;border:3px solid var(--gold2);
   background:radial-gradient(ellipse at 50% 10%,#882012,#2e0904);box-shadow:0 0 50px rgba(255,190,90,.4),0 8px 30px rgba(0,0,0,.85);
   opacity:0;transform:scale(.92);transition:opacity .35s,transform .35s cubic-bezier(.2,1.3,.4,1)}
 #gift::before,#gift::after{content:"🪷";position:absolute;top:50%;transform:translateY(-50%);font-size:38px;color:var(--gold2)}
 #gift::before{left:26px}#gift::after{right:26px}
 #gift.show{opacity:1;transform:none}
 #gift .who,#gift .what,#gift .pray{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#gift .who{font-family:var(--display);font-weight:700;font-size:38px;line-height:1.15;color:var(--gold2);text-shadow:0 2px 4px #000}
-#gift .what{font-size:23px;margin-top:2px;color:#fff2d6}
-#gift .pray{font-family:var(--display);font-style:italic;font-size:21px;color:var(--gold2);margin-top:2px;opacity:.95}
+#gift .who{font-family:var(--display);font-weight:700;font-size:44px;line-height:1.15;color:var(--gold2);text-shadow:0 2px 4px #000}
+#gift .what{font-size:28px;margin-top:2px;color:#fff2d6}
+#gift .pray{font-family:var(--display);font-style:italic;font-size:26px;color:var(--gold2);margin-top:2px;opacity:.95}
 
 #conn{position:absolute;z-index:4;right:16px;bottom:12px;font-size:20px;color:var(--muted);opacity:.6}
 
@@ -202,8 +202,8 @@ function avatar(url){ if(!url) return null; let im=avatars.get(url); if(!im){ im
 const FLOOR_Y_TOP = 1042;
 const FLOOR_Y_BOT = 1840;
 const FLOOR = { yTop: FLOOR_Y_TOP, yBot: FLOOR_Y_BOT };
-const SEAT_TOP = 1124, SEAT_BOT = 1806, TAG_DROP = 5;     // first and last row of cushions; a name tag starts this far above the cushion's base
-const tagFont = t => Math.round(15 + 2 * t), tagHeight = fs => fs + 5;
+const SEAT_TOP = 1160, SEAT_BOT = 1802, TAG_DROP = 5;     // first and last row of cushions; a name tag starts this far above the cushion's base
+const tagFont = (t, rows) => Math.round((rows <= 6 ? 21 : rows <= 8 ? 18 : 15) + 2 * t), tagHeight = fs => fs + 5;
 let cap = 60, seats = [];
 const visitors = new Map();  // id -> visitor
 let order = [];               // ids in seating order
@@ -216,21 +216,21 @@ const colsFor = n => n <= 4 ? 1 : n <= 10 ? 2 : n <= 30 ? 3 : n <= 40 ? 4 : 5;
 function seatSide(ids, dir){
   if (!ids.length) return;
   const cols = colsFor(ids.length), rows = Math.ceil(ids.length / cols);
-  // rows come closer together with distance, in the same ratio as the floor
+  // rows come closer together with distance, more gently than the floor, so the far rows stay large enough to read
   const span = SEAT_BOT - SEAT_TOP, gaps = [];
-  let p0 = rows > 1 ? span / ((rows - 1) * 1.3) : 0, stretch = Math.min(1, 150 / (p0 * 1.6 || 150));
-  for (let i = 0; i < rows - 1; i++) gaps.push(p0 * stretch * (1 + .6 * (rows > 2 ? i / (rows - 2) : 0)));
+  let p0 = rows > 1 ? span / ((rows - 1) * 1.15) : 0, stretch = Math.min(1, 240 / (p0 * 1.3 || 240));
+  for (let i = 0; i < rows - 1; i++) gaps.push(p0 * stretch * (1 + .3 * (rows > 2 ? i / (rows - 2) : 0)));
   let y = rows > 1 ? SEAT_TOP + (span - gaps.reduce((a, b) => a + b, 0)) / 2 : SEAT_TOP + span * .45;
   const ys = [y]; for (const g of gaps) ys.push(y += g);
   ids.forEach((id, i) => {
     const v = visitors.get(id); if (!v) return;
     const r = Math.floor(i / cols), c = i % cols, yy = ys[r], t = (yy - SEAT_TOP) / span;
-    const inner = 170 + 40 * t, outer = Math.min(490, 425 + 100 * t), colGap = cols > 1 ? (outer - inner) / (cols - 1) : 200;
+    const inner = 170 + 40 * t, outer = Math.min(470, 425 + 100 * t), colGap = cols > 1 ? (outer - inner) / (cols - 1) : 200;
     const x = 540 + dir * (cols > 1 ? inner + colGap * c : (inner + outer) / 2);
-    const fs = tagFont(t), behind = r > 0 ? gaps[r - 1] : (gaps[0] ?? 150);
+    const fs = tagFont(t, rows), behind = r > 0 ? gaps[r - 1] : (gaps[0] ?? 150);
     // a head must end above the name tag of the person behind, or the tag would lie on it
-    const h = Math.min(behind - tagHeight(fs) + TAG_DROP - 1, colGap * 1.12, 140);
-    v.seat = { x, y: yy, scale: Math.max(.1, h / 273), side: dir < 0 ? 'left' : 'right', r, c, rows, cols, gap: behind, fs, tagW: colGap >= 100 ? Math.round(colGap - 29) : 96 };
+    const h = Math.min(behind - tagHeight(fs) + TAG_DROP - 1, colGap * 1.35, 180);
+    v.seat = { x, y: yy, scale: Math.max(.1, h / 273), side: dir < 0 ? 'left' : 'right', r, c, rows, cols, gap: behind, fs, tagW: colGap >= 100 ? Math.floor(colGap - 31) : 96 };
     v.flip = dir > 0;
   });
 }
@@ -481,11 +481,11 @@ function giftFx(v, tier){ if (tier>=3) bell(true); }     // nothing flies about:
 /* a gift is a small rite: the giver stands up, carries the offering to the altar, sets it down (incense goes into the censer),
    bows three times in the exact centre, just below the abbot, then backs away to their seat without turning their back on the Buddha.
    One person at a time: everyone else lines up along the middle aisle with their offering in hand. */
-const OFFER_BOX=40;     // every offering fits this box on the table, so no two ever touch
+const OFFER_BOX=56;     // every offering fits this box on the table, so no two ever touch
 const OFFER_PARTS={lequa:['nguqua','sen'],lexoi:['xoi','nguqua'],lechay:['nguqua','xoi','banh'],daile:['nguqua','xoi','banh','sen']};     // the larger offerings are several dishes, all vegetarian
 // The offering table stands empty in two wings, leaving the way to the censer open. Spots fill from the aisle outwards, front row first.
 const TABLE={top:960,front:1035,bottom:1068,in:40,out:412,backOut:390}, ALTAR_SPOTS=[];
-for (const y of [1031,989]) for (let i=0;i<8;i++) for (const d of [-1,1]) ALTAR_SPOTS.push([540+d*(72+i*44),y]);
+for (const [y,n] of [[1033,6],[977,5]]) for (let i=0;i<n;i++) for (const d of [-1,1]) ALTAR_SPOTS.push([540+d*(72+i*62),y]);
 const CENSER = [540, 802], OFFER_STAY = 240;
 const altar=new Array(ALTAR_SPOTS.length).fill(null), fadingOffers=[], placing=[], sticks=[]; let nextStick=0, smokeBoost=0;
 function getFreeAltarSpot(id, key){
@@ -498,7 +498,7 @@ function getFreeAltarSpot(id, key){
   altar[i]={key,id,reserved:true};
   return i;
 }
-const walkScale=y=>.38+.14*Math.max(0,Math.min(1,(y-FLOOR_Y_TOP)/(FLOOR_Y_BOT-FLOOR_Y_TOP)));
+const walkScale=y=>.4+.24*Math.max(0,Math.min(1,(y-FLOOR_Y_TOP)/(FLOOR_Y_BOT-FLOOR_Y_TOP)));
 const MAT_Y=1240, LANES=[[540,MAT_Y]], LANE_APPROACH=MAT_Y, ALTAR_Y=1036, CORRIDOR_Y=1094, QUEUE_Y=1410, QUEUE_GAP=130, MAX_LINE=3, SIDE_LANE=92, laneBusy=[null], riteQueue=[];
 const STICK_X=[0,-14,14,-26,26,-7,7,-20,20,-32,32,-3], STICK_BASE=[537,798], STICK_LIFE=180;
 // Only man, woman and granny have walking frames: the other outfits borrow one for the rite, recoloured to match.
